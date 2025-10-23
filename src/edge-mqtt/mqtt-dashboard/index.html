@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>MQTT Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h2>MQTT Dashboard</h2>
+
+    <!-- Connect -->
+    <div class="row">
+      <label>Broker WS URL:</label>
+      <input id="url" size="36" value="ws://10.126.128.127:8080/mqtt" />
+      <label>User:</label><input id="user" size="10" placeholder="(optional)" />
+      <label>Pass:</label><input id="pass" size="10" placeholder="(optional)" type="password" />
+      <button id="connect">Connect</button>
+      <span id="status" class="badge">disconnected</span>
+    </div>
+
+    <!-- Subscribe -->
+    <div class="row">
+      <label>Subscribe topic:</label>
+      <input id="sub" size="40" value="#" />
+      <button id="subBtn">Subscribe</button>
+      <span class="muted">Tip: use <code>#</code> to see all</span>
+    </div>
+
+    <!-- Add devices -->
+    <div class="row">
+      <label>Add device ID:</label>
+      <input id="addDev" placeholder="pico-xx" />
+      <button id="addBtn">Add</button>
+      <span class="muted">(buttons publish to <code>pico/&lt;device&gt;/cmd</code>)</span>
+    </div>
+
+    <!-- Quick controls -->
+    <h3>Quick controls</h3>
+    <div id="deviceGrid" class="grid"></div>
+
+    <!-- Messages -->
+    <h3>Messages</h3>
+    <table>
+      <thead><tr><th>Time</th><th>Topic</th><th>Payload</th></tr></thead>
+      <tbody id="log"></tbody>
+    </table>
+
+    <!-- Console -->
+    <h3>Console</h3>
+    <div id="console"></div>
+
+    <!-- Scripts: mqtt.min.js FIRST, then your app -->
+    <script src="mqtt.min.js"></script>
+    <!-- Optional CDN fallback if the local file is missing -->
+    <script>
+      if (!window.mqtt) {
+        var s=document.createElement('script');
+        s.src='https://unpkg.com/mqtt/dist/mqtt.min.js';
+        document.body.appendChild(s);
+      }
+    </script>
+    <script src="app.js"></script>
+  </body>
+</html>
