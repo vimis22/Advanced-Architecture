@@ -1,11 +1,10 @@
 services:
   mosquitto:
     image: eclipse-mosquitto:2.0.18   # pin a known-good version
-    container_name: mosquitto
     restart: unless-stopped
     ports:
-      - "${MQTT_TCP_PORT}:1883"       # MQTT TCP for Picos / tools
-      - "${MQTT_WS_PORT}:8080"        # MQTT over WebSockets for dashboard
+      - "${MQTT_TCP_PORT:-1883}:1883"       # MQTT TCP for Picos / tools
+      - "${MQTT_WS_PORT:-8080}:8080"        # MQTT over WebSockets for dashboard
     volumes:
       # map your actual conf file path
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
@@ -18,12 +17,11 @@ services:
 
   dashboard:
     build: ./mqtt-dashboard
-    container_name: mqtt-dashboard
     restart: unless-stopped
     environment:
-      - DASH_DEFAULT_WS=${DASH_DEFAULT_WS}
+      - DASH_DEFAULT_WS=${DASH_DEFAULT_WS:-ws://localhost:8080/mqtt}
     ports:
-      - "${DASH_PORT}:80"
+      - "${DASH_PORT:-8085}:80"
     depends_on:
       - mosquitto
 
