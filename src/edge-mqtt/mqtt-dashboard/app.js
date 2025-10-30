@@ -157,3 +157,64 @@ setInterval(() => {
 
 // Initial render
 renderDevices();
+
+// ... everything you already had above ...
+
+els.connect.onclick = () => {
+  try {
+    if (client) client.end(true);
+    const url = els.url.value.trim();
+    const username = els.user.value.trim();
+    const password = els.pass.value;
+
+    const opts = { clean: true };
+    if (username) Object.assign(opts, { username, password });
+
+    client = mqtt.connect(url, opts);
+    els.status.textContent = 'connecting…'; els.status.className = 'badge warn';
+    clog('warn', `Connecting to ${url} …`);
+
+    client.on('connect', () => {
+      els.status.textContent = 'connected'; els.status.className = 'badge ok';
+      clog('ok', 'Connected');
+
+      // 👇👇 ADD THESE LINES 👇👇
+      // show exactly what `mosquitto_sub -t 'pico/+/telemetry'` shows
+      client.subscribe('pico/+/telemetry', { qos: 1 });
+      // also handy to see online/offline
+      client.subscribe('pico/+/status', { qos: 1 });
+      clog('ok', 'Auto-subscribed to pico/+/telemetry and pico/+/status');
+      // 👆👆 ADD THESE LINES 👆👆
+    });
+
+    client.on('reconnect', () => {
+      els.status.textContent = 'reconnecting…'; els.status.className = 'badge warn';
+      clog('warn', 'Reconnecting…');
+    });
+    client.on('close', () => {
+      els.status.textContent = 'disconnected'; els.status.className = 'badge';
+      clog('err', 'Disconnected');
+    });
+    client.on('error', (err) => { clog('err', 'Error: ' + (err?.message || err)); });
+
+    client.on('message', (topic, message) => {
+      const text = message.toString();
+      msglog(topic, text);
+
+      const m = topic.match(/^pico\/([^/]+)\/(status|telemetry|cmd)$/);
+      if (m) {
+        const id = m[1];
+        LAST_SEEN.set(id, Date.now());
+        if (!DEVICES.has(id)) {
+          DEVICES.add(id); saveDevices(); renderDevices();
+          clog('ok', `Auto-added ${id}`);
+        }
+      }
+    });
+
+    renderDevices();
+  } catch (e) {
+    clog('err', 'JS error: ' + e.message);
+  }
+};
+
