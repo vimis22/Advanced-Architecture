@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Specifies that this project uses the standard .NET SDK -->
+  
+  <PropertyGroup>
+    <!-- OutputType "Exe" means the project will compile to a console application -->
+    <OutputType>Exe</OutputType>
+
+    <!-- TargetFramework specifies the version of .NET to use -->
+    <TargetFramework>net8.0</TargetFramework>
+
+    <!-- ImplicitUsings enables automatic inclusion of common namespaces like System, System.Collections.Generic, etc. -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Nullable enables nullable reference type annotations to improve null safety -->
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
