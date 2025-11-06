@@ -1,0 +1,55 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Route til Orchestrator
+        - id: orchestrator-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/orchestrator/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+            - name: CircuitBreaker
+              args:
+                name: orchestratorCircuitBreaker
+                fallbackUri: forward:/fallback/orchestrator
+
+        # Route til BookScheduler (hvis du har den)
+        - id: book-scheduler-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v1/scheduler/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: schedulerCircuitBreaker
+                fallbackUri: forward:/fallback/scheduler
+
+      # Global filters
+      default-filters:
+        - AddRequestHeader=X-Gateway-Request, ApiGateway
+        - AddResponseHeader=X-Gateway-Response, ApiGateway
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO
