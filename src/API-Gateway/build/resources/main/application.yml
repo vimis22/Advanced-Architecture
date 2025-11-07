@@ -16,7 +16,7 @@ spring:
         pool:
           type: elastic
           max-connections: 200
-          acquire-timeout: 500ms
+          acquire-timeout: 500
       routes:
         # Route to Orchestrator
         - id: orchestrator-service
@@ -34,17 +34,6 @@ spring:
                 name: orchestratorCircuitBreaker
                 fallbackUri: forward:/fallback/orchestrator
 
-        # Route to BookScheduler
-        - id: book-scheduler-service
-          uri: http://localhost:8082
-          predicates:
-            - Path=/api/v1/scheduler/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: schedulerCircuitBreaker
-                fallbackUri: forward:/fallback/scheduler
-
       # Global filters
       default-filters:
         - AddRequestHeader=X-Gateway-Request, ApiGateway
@@ -59,25 +48,3 @@ resilience4j:
         minimumNumberOfCalls: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
-      schedulerCircuitBreaker:
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 50
-        minimumNumberOfCalls: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-
-# Actuator endpoints
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,gateway
-  endpoint:
-    health:
-      show-details: always
-
-# Logging
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    reactor.netty: INFO

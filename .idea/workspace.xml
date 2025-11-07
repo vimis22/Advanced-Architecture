@@ -11,35 +11,44 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/BookScheduler.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Binder.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Machine.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/MachineManager.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Packager.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Printer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/Program.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/Scheduler.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.deps.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.pdb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.runtimeconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/BookScheduler.csproj.nuget.dgspec.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/BookScheduler.csproj.nuget.g.props" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/BookScheduler.csproj.nuget.g.targets" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.AssemblyInfo.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.AssemblyInfoInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.GlobalUsings.g.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.assets.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.csproj.CoreCompileInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.csproj.FileListAbsolute.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.genruntimeconfig.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.pdb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/apphost.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/ref/BookScheduler.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/refint/BookScheduler.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/project.assets.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/project.nuget.cache" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/checksums/checksums.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/checksums/md5-checksums.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/checksums/sha1-checksums.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/executionHistory/executionHistory.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/executionHistory/executionHistory.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/fileChanges/last-build.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/fileHashes/fileHashes.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/fileHashes/fileHashes.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/8.14/gc.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/file-system.probe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/.gradle/vcs-1/gc.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/build.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/LoggingFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/LoggingFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/settings.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Orchestrator/settings.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,6 +119,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -132,7 +144,9 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.APIGatewayApplication.executor": "Run",
     "Spring Boot.OrchestratorApplication.executor": "Run",
+    "android.gradle.sync.needed": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "apigateway__branch",
@@ -156,7 +170,7 @@
       <recent name="D:\Projects\School_Projects\Advanced-Architecture\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.OrchestratorApplication">
+  <component name="RunManager" selected="Spring Boot.APIGatewayApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="ApiGateway" />
       <method v="2">
@@ -308,7 +322,8 @@
       <workItem from="1762507538325" duration="1241000" />
       <workItem from="1762525392956" duration="418000" />
       <workItem from="1762525835528" duration="1847000" />
-      <workItem from="1762527728968" duration="927000" />
+      <workItem from="1762527728968" duration="979000" />
+      <workItem from="1762530567342" duration="512000" />
     </task>
     <servers />
   </component>
