@@ -8,7 +8,6 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Advanced-Architecture" options="" />
       <module name="Advanced-Architecture.src" options="" />
-      <module name="Advanced-Architecture.src.API-Gateway" options="" />
       <module name="Advanced-Architecture.src.edge-mqtt" options="" />
     </option>
   </component>

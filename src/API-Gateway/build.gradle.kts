@@ -4,7 +4,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
 }
 
-group = "org.advanced_architecture"
+group = "org.advanced_architecture.gateway"
 version = "1.0.0"
 
 java {
