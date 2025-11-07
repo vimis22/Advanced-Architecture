@@ -4,10 +4,21 @@ server:
 spring:
   application:
     name: api-gateway
+  data:
+    redis:
+      host: localhost
+      port: 6379
   cloud:
     gateway:
+      httpclient:
+        connect-timeout: 5000 # milliseconds
+        response-timeout: 10s
+        pool:
+          type: elastic
+          max-connections: 200
+          acquire-timeout: 500ms
       routes:
-        # Route til Orchestrator
+        # Route to Orchestrator
         - id: orchestrator-service
           uri: http://localhost:8081
           predicates:
@@ -15,6 +26,7 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
+                key-resolver: "#{@ipKeyResolver}"
                 redis-rate-limiter.replenishRate: 10
                 redis-rate-limiter.burstCapacity: 20
             - name: CircuitBreaker
@@ -22,7 +34,7 @@ spring:
                 name: orchestratorCircuitBreaker
                 fallbackUri: forward:/fallback/orchestrator
 
-        # Route til BookScheduler (hvis du har den)
+        # Route to BookScheduler
         - id: book-scheduler-service
           uri: http://localhost:8082
           predicates:
@@ -37,6 +49,22 @@ spring:
       default-filters:
         - AddRequestHeader=X-Gateway-Request, ApiGateway
         - AddResponseHeader=X-Gateway-Response, ApiGateway
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      orchestratorCircuitBreaker:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 50
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+      schedulerCircuitBreaker:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 50
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
 
 # Actuator endpoints
 management:
