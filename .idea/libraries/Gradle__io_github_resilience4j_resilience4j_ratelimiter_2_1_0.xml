@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: io.github.resilience4j:resilience4j-ratelimiter:2.1.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="io.github.resilience4j" artifactId="resilience4j-ratelimiter" version="2.1.0" baseVersion="2.1.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.resilience4j/resilience4j-ratelimiter/2.1.0/48dff23ede5fef4bdbc6ade6e7b27c86a96f59e8/resilience4j-ratelimiter-2.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
