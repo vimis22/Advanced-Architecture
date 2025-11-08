@@ -1,3 +1,10 @@
+# Application for Configuration of API Gateway
+# Responsibilities:
+# - Configures server port
+# - Sets up Redis connection details
+# - Configures Resilience4j circuit breaker settings
+# - Defines API Gateway routes and filters
+
 server:
   port: 8080
 
@@ -48,3 +55,6 @@ resilience4j:
         minimumNumberOfCalls: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
+
+
+

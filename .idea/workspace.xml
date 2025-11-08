@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db14e5e4-1b0f-4638-9876-4c6617d0e828" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" afterDir="false" />
@@ -12,43 +14,17 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/BookScheduler.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Binder.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Machine.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/MachineManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Packager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/Machines/Printer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/Program.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/Scheduler.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.deps.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.pdb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/bin/Debug/net8.0/BookScheduler.runtimeconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/BookScheduler.csproj.nuget.dgspec.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/BookScheduler.csproj.nuget.g.props" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/BookScheduler.csproj.nuget.g.targets" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.AssemblyInfo.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.AssemblyInfoInputs.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.GlobalUsings.g.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.assets.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.csproj.CoreCompileInputs.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.csproj.FileListAbsolute.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.genruntimeconfig.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/BookScheduler.pdb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/apphost.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/ref/BookScheduler.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/Debug/net8.0/refint/BookScheduler.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/project.assets.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookScheduler/obj/project.nuget.cache" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/compileTransaction/stash-dir/LoggingFilter.class.uniqueId0" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/APIGatewayApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/APIGatewayApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/FallbackController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/LoggingFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/RateLimitConfig.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,38 +106,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build Advanced-Architecture.executor": "Run",
-    "Gradle.Build Orchestrator.executor": "Run",
-    "Gradle.Build src.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.APIGatewayApplication.executor": "Run",
-    "Spring Boot.OrchestratorApplication.executor": "Run",
-    "android.gradle.sync.needed": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "apigateway__branch",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Projects/School_Projects/Advanced-Architecture",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "onboarding.tips.debug.path": "D:/Projects/School_Projects/Advanced-Architecture/Orchestrator/src/main/java/org/advanced-architecture/Main.java",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build Advanced-Architecture.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build Orchestrator.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build src.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.APIGatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.OrchestratorApplication.executor&quot;: &quot;Run&quot;,
+    &quot;android.gradle.sync.needed&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;apigateway__branch&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Projects/School_Projects/Advanced-Architecture&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;D:/Projects/School_Projects/Advanced-Architecture/Orchestrator/src/main/java/org/advanced-architecture/Main.java&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="org.advanced_architecture.infrastructure.kafka" />
@@ -222,13 +198,6 @@
     <configuration name="APIGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="Advanced-Architecture.src.API-Gateway.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="org.advanced_architecture.gateway.APIGatewayApplication" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="OrchestratorApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-      <module name="Advanced-Architecture.src.Orchestrator.main" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="org.advanced_architecture.OrchestratorApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -323,7 +292,12 @@
       <workItem from="1762525392956" duration="418000" />
       <workItem from="1762525835528" duration="1847000" />
       <workItem from="1762527728968" duration="979000" />
-      <workItem from="1762530567342" duration="512000" />
+      <workItem from="1762530567342" duration="2616000" />
+      <workItem from="1762534992565" duration="267000" />
+      <workItem from="1762539837681" duration="528000" />
+      <workItem from="1762544045598" duration="4132000" />
+      <workItem from="1762549272995" duration="5129000" />
+      <workItem from="1762600711081" duration="4346000" />
     </task>
     <servers />
   </component>
