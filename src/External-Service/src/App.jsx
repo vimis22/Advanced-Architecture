@@ -1,16 +1,15 @@
-import React from "react";
-import "./styles.css";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import CreateOrderPage from './pages/CreateOrderPage';
 
 function App() {
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>External Service – React UI</h1>
-        <p>
-          Du kan bygge videre på dit UI herfra.
-        </p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create-order" element={<CreateOrderPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
