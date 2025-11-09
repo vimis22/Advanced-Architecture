@@ -27,15 +27,15 @@ spring:
       routes:
         # Route to Orchestrator
         - id: orchestrator-service
-          uri: http://localhost:8081
+          uri: http://orchestrator:8082
           predicates:
             - Path=/api/v1/orchestrator/**
           filters:
-            - name: RequestRateLimiter
-              args:
-                key-resolver: "#{@ipKeyResolver}"
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
+#            - name: RequestRateLimiter
+#              args:
+#                key-resolver: "#{@ipKeyResolver}"
+#                redis-rate-limiter.replenishRate: 10
+#                redis-rate-limiter.burstCapacity: 20
             - name: CircuitBreaker
               args:
                 name: orchestratorCircuitBreaker

@@ -49,7 +49,7 @@ public class OrderIngestController {
                 order.getCreatedAt().toString()
         );
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/orders/{orderId}")

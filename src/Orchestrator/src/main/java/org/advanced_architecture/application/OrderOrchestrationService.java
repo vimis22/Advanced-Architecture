@@ -39,8 +39,12 @@ public class OrderOrchestrationService {
         Map<String, Object> orderCreatedEvent = buildOrderCreatedEvent(savedOrder);
 
         String eventKey = String.valueOf(savedOrder.getId());
-        eventPublisher.publish(ORDER_CREATED_TOPIC, eventKey, orderCreatedEvent);
-        logger.info("OrderCreated event published for order ID: {}", savedOrder.getId());
+        try {
+            eventPublisher.publish(ORDER_CREATED_TOPIC, eventKey, orderCreatedEvent);
+            logger.info("OrderCreated event published for order ID: {}", savedOrder.getId());
+        } catch (Exception ex) {
+            logger.warn("Kafka not available or publish failed. Continuing without event publication. Cause: {}", ex.toString());
+        }
 
         savedOrder.markAsOrchestrated();
         orderRepository.save(savedOrder);

@@ -2,15 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Advanced-Architecture.iml" filepath="$PROJECT_DIR$/.idea/modules/Advanced-Architecture.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Advanced-Architecture.src.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Advanced-Architecture.src.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.iml" filepath="$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/edge-mqtt/Advanced-Architecture.src.edge-mqtt.iml" filepath="$PROJECT_DIR$/.idea/modules/src/edge-mqtt/Advanced-Architecture.src.edge-mqtt.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ApiGateway.iml" filepath="$PROJECT_DIR$/.idea/modules/ApiGateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ApiGateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ApiGateway.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ApiGateway.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ApiGateway.test.iml" />
