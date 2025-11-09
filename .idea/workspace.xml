@@ -5,25 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db14e5e4-1b0f-4638-9876-4c6617d0e828" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/functions/FunctionMethods.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/functions/OrderForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/interface/OrderFormState.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/interface/OrderResponse.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/interface/Payload.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screenparts/Button.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screenparts/Navbar.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screenparts/NormalText.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/newly/HomeScreen.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/newly/OrderScreen.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/API-Gateway/src/main/java/org/advanced_architecture/gateway/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/components/ProductionOrderForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/ProductionOrderForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/main.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/CreateOrderPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/CreateOrderPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/CreateOrderPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/CreateOrderPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/HomePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/HomePage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/HomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/HomePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/External-Service/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/GlobalStyles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -326,7 +320,8 @@
       <workItem from="1762690374653" duration="6199000" />
       <workItem from="1762708072042" duration="7191000" />
       <workItem from="1762718793590" duration="174000" />
-      <workItem from="1762719053295" duration="2205000" />
+      <workItem from="1762719053295" duration="5701000" />
+      <workItem from="1762725079354" duration="1594000" />
     </task>
     <servers />
   </component>
