@@ -4,6 +4,7 @@ using BookScheduler;
 
 public class Scheduler
 {
+    // RunAsync handles asking the user for input and starting production
     public static async Task RunAsync()
     {
         Console.Write("Enter number of books to produce: ");
