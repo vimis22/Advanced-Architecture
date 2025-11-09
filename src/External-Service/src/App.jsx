@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import CreateOrderPage from './pages/CreateOrderPage';
+import HomeScreen from "./components/screens/newly/HomeScreen";
+import OrderScreen from "./components/screens/newly/OrderScreen";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/create-order" element={<CreateOrderPage />} />
+        <Route path="/" element={<HomeScreen />} />
+        <Route path="/create-order" element={<OrderScreen />} />
       </Routes>
     </BrowserRouter>
   );

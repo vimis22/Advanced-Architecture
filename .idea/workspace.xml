@@ -5,38 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db14e5e4-1b0f-4638-9876-4c6617d0e828" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/Advanced-Architecture.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/API-Gateway/Advanced-Architecture.src.API-Gateway.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/Advanced-Architecture.src.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/Orchestrator/Advanced-Architecture.src.Orchestrator.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/src/edge-mqtt/Advanced-Architecture.src.edge-mqtt.iml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/functions/FunctionMethods.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/functions/OrderForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/interface/OrderFormState.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/interface/OrderResponse.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/interface/Payload.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screenparts/Button.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screenparts/Navbar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screenparts/NormalText.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/newly/HomeScreen.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/newly/OrderScreen.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/resources/main/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/compileTransaction/stash-dir/FallbackController.class.uniqueId0" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/compileTransaction/stash-dir/LoggingFilter.class.uniqueId2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/compileTransaction/stash-dir/RateLimitConfig.class.uniqueId1" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/API-Gateway/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Orchestrator/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/Orchestrator/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Orchestrator/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Orchestrator/docker-compose.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Orchestrator/src/main/java/org/advanced_architecture/api/OrderIngestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Orchestrator/src/main/java/org/advanced_architecture/api/OrderIngestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Orchestrator/src/main/java/org/advanced_architecture/application/OrderOrchestrationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Orchestrator/src/main/java/org/advanced_architecture/application/OrderOrchestrationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Orchestrator/src/main/java/org/advanced_architecture/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Orchestrator/src/main/java/org/advanced_architecture/docker-compose.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/edge-mqtt/data/mosquitto.db" beforeDir="false" afterPath="$PROJECT_DIR$/src/edge-mqtt/data/mosquitto.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/components/ProductionOrderForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/ProductionOrderForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/main.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/CreateOrderPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/CreateOrderPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/CreateOrderPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/CreateOrderPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/HomePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/HomePage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/pages/HomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/components/screens/archive/HomePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/External-Service/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/External-Service/src/GlobalStyles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,44 +105,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.API-Gateway/Dockerfile.executor": "Run",
-    "Gradle.Build Advanced-Architecture.executor": "Run",
-    "Gradle.Build Orchestrator.executor": "Run",
-    "Gradle.Build src.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.APIGatewayApplication.executor": "Run",
-    "Spring Boot.OrchestratorApplication.executor": "Run",
-    "android.gradle.sync.needed": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "apigateway__branch",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Projects/School_Projects/Advanced-Architecture",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "onboarding.tips.debug.path": "D:/Projects/School_Projects/Advanced-Architecture/Orchestrator/src/main/java/org/advanced-architecture/Main.java",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.API-Gateway/Dockerfile.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build Advanced-Architecture.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build Orchestrator.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build src.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.APIGatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.OrchestratorApplication.executor&quot;: &quot;Run&quot;,
+    &quot;android.gradle.sync.needed&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;externalservice__branch&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Projects/School_Projects/Advanced-Architecture&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;D:/Projects/School_Projects/Advanced-Architecture/Orchestrator/src/main/java/org/advanced-architecture/Main.java&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\VivekMisra\\AppData\\Local\\Programs\\IntelliJ IDEA Ultimate\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="org.advanced_architecture.infrastructure.kafka" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\School_Projects\Advanced-Architecture\src\External-Service\src\components\screens\newly" />
+      <recent name="D:\Projects\School_Projects\Advanced-Architecture\src\External-Service\src\components\screens\archive" />
+      <recent name="D:\Projects\School_Projects\Advanced-Architecture\src\External-Service\src\components" />
       <recent name="D:\Projects\School_Projects\Advanced-Architecture\src" />
     </key>
   </component>
@@ -332,7 +323,10 @@
       <workItem from="1762600711081" duration="4346000" />
       <workItem from="1762630004706" duration="9543000" />
       <workItem from="1762680061600" duration="4660000" />
-      <workItem from="1762690374653" duration="3175000" />
+      <workItem from="1762690374653" duration="6199000" />
+      <workItem from="1762708072042" duration="7191000" />
+      <workItem from="1762718793590" duration="174000" />
+      <workItem from="1762719053295" duration="2205000" />
     </task>
     <servers />
   </component>
