@@ -41,7 +41,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
         "ts": now_iso(),
         "status": "online",
         "profile": PROFILE
-    }), qos=1, retain=True)
+    }), qos=1)
     # subscribe to commands
     client.subscribe(TOPIC_CMD, qos=1)
 
@@ -98,7 +98,7 @@ def main():
             "device_id": DEVICE_ID,
             "ts": now_iso(),
             "status": "offline"
-        }), qos=1, retain=True)
+        }), qos=1)
         client.loop_stop()
         client.disconnect()
 
