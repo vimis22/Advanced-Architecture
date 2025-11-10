@@ -1,5 +1,6 @@
 package org.advanced_architecture.application;
 
+import org.advanced_architecture.application.mapper.OrderEventPayloadMapper;
 import org.advanced_architecture.application.port.EventPublisher;
 import org.advanced_architecture.application.port.OrderRepository;
 import org.advanced_architecture.domain.BookDetails;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -36,7 +36,7 @@ public class OrderOrchestrationService {
         ProductionOrder savedOrder = orderRepository.save(order);
         logger.info("Order persisted with ID: {}", savedOrder.getId());
 
-        Map<String, Object> orderCreatedEvent = buildOrderCreatedEvent(savedOrder);
+        Map<String, Object> orderCreatedEvent = OrderEventPayloadMapper.buildOrderCreatedEvent(savedOrder);
 
         String eventKey = String.valueOf(savedOrder.getId());
         try {
@@ -57,19 +57,6 @@ public class OrderOrchestrationService {
     public ProductionOrder getOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order ikke fundet: " + orderId));
-    }
-
-    private Map<String, Object> buildOrderCreatedEvent(ProductionOrder order) {
-        Map<String, Object> event = new HashMap<>();
-        event.put("orderId", order.getId());
-        event.put("title", order.getBookDetails().getTitle());
-        event.put("author", order.getBookDetails().getAuthor());
-        event.put("pages", order.getBookDetails().getPages());
-        event.put("coverType", order.getBookDetails().getCoverType());
-        event.put("quantity", order.getBookDetails().getQuantity());
-        event.put("estimatedCost", order.getBookDetails().getEstimatedCost());
-        event.put("createdAt", order.getCreatedAt().toString());
-        return event;
     }
 
     public static class OrderNotFoundException extends RuntimeException {

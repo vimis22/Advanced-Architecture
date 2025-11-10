@@ -1,15 +1,12 @@
 package org.advanced_architecture.api;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import org.advanced_architecture.api.dto.CreateOrderRequest;
+import org.advanced_architecture.api.dto.OrderResponse;
 import org.advanced_architecture.application.OrderOrchestrationService;
-import org.advanced_architecture.domain.BookDetails;
 import org.advanced_architecture.domain.ProductionOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -33,21 +30,9 @@ public class OrderIngestController {
     public ResponseEntity<OrderResponse> ingestOrder(@Valid @RequestBody CreateOrderRequest request) {
         logger.info("Received order request for book: {}", request.title());
 
-        BookDetails bookDetails = new BookDetails(
-                request.title(),
-                request.author(),
-                request.pages(),
-                request.coverType(),
-                request.quantity()
-        );
+        ProductionOrder order = orchestrationService.orchestrateOrder(ApiOrderMapper.toDomain(request));
 
-        ProductionOrder order = orchestrationService.orchestrateOrder(bookDetails);
-
-        OrderResponse response = new OrderResponse(
-                order.getId(),
-                order.getState().toString(),
-                order.getCreatedAt().toString()
-        );
+        OrderResponse response = ApiOrderMapper.toResponse(order);
 
         return ResponseEntity.ok(response);
     }
@@ -57,11 +42,7 @@ public class OrderIngestController {
         try {
             ProductionOrder order = orchestrationService.getOrder(orderId);
 
-            OrderResponse response = new OrderResponse(
-                    order.getId(),
-                    order.getState().toString(),
-                    order.getCreatedAt().toString()
-            );
+            OrderResponse response = ApiOrderMapper.toResponse(order);
 
             return ResponseEntity.ok(response);
         } catch (OrderOrchestrationService.OrderNotFoundException e) {
@@ -75,18 +56,4 @@ public class OrderIngestController {
         ex.getBindingResult().getFieldErrors().forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
-
-    public static record CreateOrderRequest(
-            @NotBlank(message = "title is required") String title,
-            @NotBlank(message = "author is required") String author,
-            @NotNull(message = "pages is required") @Min(value = 1, message = "pages must be >= 1") Integer pages,
-            @NotBlank(message = "coverType is required") String coverType,
-            @NotNull(message = "quantity is required") @Min(value = 1, message = "quantity must be >= 1") Integer quantity
-    ) {}
-
-    public static record OrderResponse(
-            Long orderId,
-            String state,
-            String createdAt
-    ) {}
 }
