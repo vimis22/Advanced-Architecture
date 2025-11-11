@@ -12,7 +12,7 @@ PROFILE     = os.getenv("PROFILE", "normal")
 BASE_TOPIC  = os.getenv("BASE_TOPIC", "pico")
 TELEM_SFX   = os.getenv("TELEMETRY_TOPIC_SUFFIX", "telemetry")
 STATUS_SFX  = os.getenv("STATUS_TOPIC_SUFFIX", "status")
-CMD_SFX     = os.getenv("CMD_TOPIC_SUFFIX", "cmd")
+CMD_SFX     = os.getenv("CMD_TOPIC_SUFFIX", "iot.mqtt.cmd")
 
 INTERVAL_MS = int(os.getenv("INTERVAL_MS", "1000"))
 JITTER_MS   = int(os.getenv("JITTER_MS", "200"))
@@ -26,15 +26,21 @@ DEVICE_ID = os.getenv("DEVICE_ID", f"{PROFILE}-{HOSTNAME[-6:]}")
 
 TOPIC_TELEM  = f"{BASE_TOPIC}/{DEVICE_ID}/{TELEM_SFX}"
 TOPIC_STATUS = f"{BASE_TOPIC}/{DEVICE_ID}/{STATUS_SFX}"
-TOPIC_CMD    = f"{BASE_TOPIC}/{DEVICE_ID}/{CMD_SFX}"
+TOPIC_CMD    = CMD_SFX
 
 seq = 0
+operating = False
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
 def on_connect(client, userdata, flags, rc, properties=None):
-    print(f"[{DEVICE_ID}] connected rc={rc}")
+    print(f"[{DEVICE_ID}] connected rc={rc}", flush=True)
+    print(f"[{DEVICE_ID}] subscribing to CMD topic: {TOPIC_CMD}", flush=True)
+
+    # subscribe to commands
+    client.subscribe(TOPIC_CMD, qos=1)
+
     # announce online
     client.publish(TOPIC_STATUS, json.dumps({
         "device_id": DEVICE_ID,
@@ -42,11 +48,34 @@ def on_connect(client, userdata, flags, rc, properties=None):
         "status": "online",
         "profile": PROFILE
     }), qos=1)
-    # subscribe to commands
-    client.subscribe(TOPIC_CMD, qos=1)
 
 def on_message(client, userdata, msg):
-    print(f"[{DEVICE_ID}] cmd {msg.topic} => {msg.payload!r}")
+    global operating
+    print(f"[{DEVICE_ID}] CMD RX TOPIC={msg.topic} payload={msg.payload!r}", flush=True)
+    try:
+        cmd = json.loads(msg.payload.decode("utf-8"))
+    except Exception as e:
+        print(f"[{DEVICE_ID}] invalid command payload: {e} => {msg.payload!r}", flush=True)
+        return
+    
+    target = cmd.get("device_id")
+    if target != DEVICE_ID:
+        print(f"[{DEVICE_ID}]", flush=True)
+        return
+
+    op = cmd.get("op")
+    if op == "power":
+        value = cmd.get("value")
+        if value == "on":
+            print(f"[{DEVICE_ID}] POWER ON", flush=True)
+            operating = True
+        elif value == "off":
+            print(f"[{DEVICE_ID}] POWER OFF", flush=True)
+            operating = False
+        else:
+            print(f"[{DEVICE_ID}] Unknown Command: {value}", flush=True)
+    else:
+        print(f"[{DEVICE_ID}] Unknow op={op} payload={cmd}", flush=True)
 
 def build_payload():
     global seq
@@ -74,6 +103,7 @@ def build_payload():
     return payload
 
 def main():
+    global operating
     client = mqtt.Client(client_id=DEVICE_ID, protocol=mqtt.MQTTv5)
     if BROKER_USER:
         client.username_pw_set(BROKER_USER, BROKER_PASS)
@@ -84,10 +114,12 @@ def main():
     client.loop_start()
 
     try:
+        time.sleep(5)
         while True:
-            payload = build_payload()
-            client.publish(TOPIC_TELEM, json.dumps(payload), qos=1)
-            print(f"[{DEVICE_ID}] -> {TOPIC_TELEM} {payload}")
+            if operating:
+                payload = build_payload()
+                client.publish(TOPIC_TELEM, json.dumps(payload), qos=1)
+                print(f"[{DEVICE_ID}] -> {TOPIC_TELEM} {payload}", flush=True)
             # base interval + jitter
             sleep_ms = INTERVAL_MS + random.randint(0, JITTER_MS)
             time.sleep(sleep_ms / 1000.0)

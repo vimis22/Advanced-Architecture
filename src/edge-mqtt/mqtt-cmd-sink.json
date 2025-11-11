@@ -1,0 +1,17 @@
+{
+    "name": "mqtt-cmd-sink",
+    "config": {
+        "connector.class": "io.confluent.connect.mqtt.MqttSinkConnector",
+        "tasks.max": "1",
+        "topics": "iot.mqtt.cmd",
+        "mqtt.server.uri": "tcp://mosquitto:1883",
+        "mqtt.qos": "1",
+        "mqtt.topic": "iot.mqtt.cmd",
+        "clean.session": "true",
+        "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+        "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+        "value.converter.schemas.enable": "false",
+        "confluent.topic.bootstrap.servers": "kafka:9092",
+        "confluent.topic.replication.factor": "1"
+    }
+}
