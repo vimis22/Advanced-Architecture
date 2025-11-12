@@ -1,90 +1,152 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookScheduler.Machines;
+using Newtonsoft.Json;
+using BookScheduler_MQTT.Services;
 
-namespace BookScheduler
+public class MachineManager
 {
-    // MachineManager is responsible for coordinating all the machines in the production line:
-    // Printers, Binders, and Packagers.
-    public class MachineManager
+    private readonly MqttClientService _mqtt;
+    private readonly DbHelper _db;
+    private readonly ConcurrentDictionary<Guid, BaseMachine> _localMachineInstances = new(); // optional if you instantiate machines in-process
+    // Keep in-memory busy tracking as a fallback to DB is_busy
+    private readonly ConcurrentDictionary<Guid, bool> _busy = new();
+
+    public MachineManager(MqttClientService mqtt, DbHelper db)
     {
-        // Lists of the different machine types managed by this manager.
-        private readonly List<Printer> _printers;
-        private readonly List<Binder> _binders;
-        private readonly List<Packager> _packagers;
+        _mqtt = mqtt;
+        _db = db;
+    }
 
-        // Constructor: initializes the manager with existing lists of machines.
-        public MachineManager(List<Printer> printers, List<Binder> binders, List<Packager> packagers)
+    // Boot sequence: read machines, subscribe for progress and done, start jobs
+    public async Task StartAsync()
+    {
+        await _mqtt.ConnectAsync();
+
+        // subscribe to progress and done topics to update DB
+        await _mqtt.SubscribeAsync("jobs/+/stages/+/progress", async payload =>
         {
-            _printers = printers;
-            _binders = binders;
-            _packagers = packagers;
-        }
-
-        // Factory method: creates a MachineManager with default machines.
-        // This is a convenient way to initialize a standard production line without manually creating each machine.
-        public static MachineManager CreateDefaultManager()
-        {
-            var printers = new List<Printer>
+            try
             {
-                new Printer("Printer 1"),
-                new Printer("Printer 2"),
-                new Printer("Printer 3")
-            };
-
-            var binders = new List<Binder>
-            {
-                new Binder("Binder 1"),
-                new Binder("Binder 2"),
-                new Binder("Binder 3")
-            };
-
-            var packagers = new List<Packager>
-            {
-                new Packager("Packager 1"),
-                new Packager("Packager 2"),
-                new Packager("Packager 3")
-            };
-
-            return new MachineManager(printers, binders, packagers);
-        }
-
-        // StartProductionAsync orchestrates the production of a specified number of books.
-        public async Task StartProductionAsync(int totalBooks)
-        {
-            // Step 1: Subscribe all machines to the MQTT broker for monitoring.
-            // Each machine can handle messages like "start production" or "status updates".
-            var subscriptionTasks = new List<Task>();
-            subscriptionTasks.AddRange(_printers.Select(p => p.SubscribeAsync()));
-            subscriptionTasks.AddRange(_binders.Select(b => b.SubscribeAsync()));
-            subscriptionTasks.AddRange(_packagers.Select(p => p.SubscribeAsync()));
-            await Task.WhenAll(subscriptionTasks); // Wait for all subscriptions to complete
-
-            // Step 2: Assign books to machines in a round-robin fashion.
-            // This ensures work is distributed evenly across all machines.
-            var productionTasks = new List<Task>();
-            for (int i = 0; i < totalBooks; i++)
-            {
-                string bookName = $"Book {i + 1}";
-
-                // Select machines in round-robin order
-                var printer = _printers[i % _printers.Count];
-                var binder = _binders[i % _binders.Count];
-                var packager = _packagers[i % _packagers.Count];
-
-                // Run the production sequence asynchronously for each book
-                productionTasks.Add(Task.Run(async () =>
+                dynamic msg = JsonConvert.DeserializeObject(payload);
+                Guid bookId = Guid.Parse((string)msg.bookId);
+                string stage = (string)msg.stage;
+                int progress = (int)msg.progress;
+                var stageRow = await _db.GetBookStageAsync(bookId, stage);
+                if (stageRow != null)
                 {
-                    await printer.PrintBookAsync(bookName); // Print the book
-                    await binder.BindBookAsync(bookName);   // Bind the book
-                    await packager.PackageBookAsync(bookName); // Package the book
-                }));
+                    await _db.UpdateStageProgressAsync(stageRow.Id, progress, progress >= 100 ? "done" : "running");
+                    Console.WriteLine($"DB: Updated progress {bookId} {stage} -> {progress}%");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error handling progress message: " + ex.Message);
+            }
+        });
+
+        await _mqtt.SubscribeAsync("jobs/+/stages/+/done", async payload =>
+        {
+            try
+            {
+                dynamic msg = JsonConvert.DeserializeObject(payload);
+                Guid bookId = Guid.Parse((string)msg.bookId);
+                string stage = (string)msg.stage;
+                Console.WriteLine($"Received done for {bookId}:{stage}");
+                // trigger next stage assignment if conditions met
+                await TryAdvancePipelineAsync(bookId, stage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error handling done message: " + ex.Message);
+            }
+        });
+
+        // Also subscribe to machine status heartbeats to update DB
+        await _mqtt.SubscribeAsync("machines/+/status", async payload =>
+        {
+            try
+            {
+                dynamic msg = JsonConvert.DeserializeObject(payload);
+                Guid machineId = Guid.Parse((string)msg.machineId);
+                await _db.SetMachineHeartbeatAsync(machineId, true);
+                Console.WriteLine($"Machine {machineId} heartbeat received");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error handling machine status: " + ex.Message);
+            }
+        });
+
+        // Kick off pending jobs
+        await KickOffPendingJobsAsync();
+    }
+
+    private async Task KickOffPendingJobsAsync()
+    {
+        var books = (await _db.GetAllBooksAsync()).ToList();
+        foreach (var book in books)
+        {
+            // ensure stages exist
+            foreach (var stage in new[] { "printing", "cover", "binding", "packaging" })
+            {
+                await _db.EnsureStageExistsAsync(book.Id, stage);
             }
 
-            // Wait for all books to complete production
-            await Task.WhenAll(productionTasks);
+            // Assign printing and cover now (parallel)
+            await AssignStageIfQueuedAsync(book.Id, "printing", "printer", commandPayload: new { job = new { id = book.Id, title = book.Title, pages = book.Pages, copies = book.Copies } });
+            await AssignStageIfQueuedAsync(book.Id, "cover", "cover", commandPayload: new { job = new { id = book.Id, title = book.Title, pages = book.Pages, copies = book.Copies } });
+        }
+    }
+
+    // Assign stage if it's queued and there is an available machine of type machineType
+    private async Task AssignStageIfQueuedAsync(Guid bookId, string stage, string machineType, object commandPayload)
+    {
+        var stageRow = await _db.GetBookStageAsync(bookId, stage);
+        if (stageRow == null) return;
+        if (stageRow.Status != "queued") return;
+
+        var available = (await _db.GetAvailableMachinesByTypeAsync(machineType)).ToList();
+        if (!available.Any())
+        {
+            Console.WriteLine($"No available machine for {machineType}, book {bookId} stage {stage} remains queued.");
+            return;
+        }
+
+        var machine = available.First(); // simple selection: pick first
+        // assign machine and publish command to it
+        await _db.AssignStageMachineAsync(bookId, stage, machine.Id);
+        await _db.SetMachineBusyAsync(machine.Id, true);
+        // Compose command. For printer/cover we include job; for binder/packager we send jobId.
+        var payload = JsonConvert.SerializeObject(commandPayload);
+        await _mqtt.PublishAsync($"machines/{machine.Id}/commands", payload);
+        Console.WriteLine($"Assigned machine {machine.Id} ({machineType}) to book {bookId} stage {stage}");
+    }
+
+    // Called when a stage completes (from done topic)
+    private async Task TryAdvancePipelineAsync(Guid bookId, string completedStage)
+    {
+        // If printing or cover done -> maybe start binding when both done
+        if (completedStage == "printing" || completedStage == "cover")
+        {
+            var printingStatus = await _db.GetStageStatusAsync(bookId, "printing");
+            var coverStatus = await _db.GetStageStatusAsync(bookId, "cover");
+            if (printingStatus == "done" && coverStatus == "done")
+            {
+                // assign binder
+                await AssignStageIfQueuedAsync(bookId, "binding", "binder", commandPayload: new { jobId = bookId });
+            }
+        }
+        else if (completedStage == "binding")
+        {
+            // assign packager
+            await AssignStageIfQueuedAsync(bookId, "packaging", "packager", commandPayload: new { jobId = bookId });
+        }
+        else if (completedStage == "packaging")
+        {
+            Console.WriteLine($"Book {bookId} fully processed (packaging done).");
         }
     }
 }

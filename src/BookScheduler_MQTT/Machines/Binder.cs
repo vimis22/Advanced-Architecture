@@ -1,36 +1,43 @@
 using System;
 using System.Threading.Tasks;
+using BookScheduler_MQTT.Services;
 
-namespace BookScheduler.Machines
+public class Binder : BaseMachine
 {
-    // The Binder class represents a machine that binds books.
-    // It inherits from BaseMachine, so it gets all the common machine properties and methods.
-    public class Binder : BaseMachine
+    public Binder(Guid id, string name, MqttClientService mqtt, DbHelper db) : base(id, name, "binder", mqtt, db) { }
+
+    public override async Task HandleCommandsAsync()
     {
-        // Constructor: initializes a Binder with a given name.
-        // Calls the base class constructor to set the name property.
-        public Binder(string name) : base(name) { }
-
-        // SubscribeAsync is an asynchronous method that connects the machine to an MQTT broker.
-        // The "override" keyword indicates that this method overrides a virtual or abstract method in the base class.
-        public override async Task SubscribeAsync()
+        await Mqtt.SubscribeAsync($"machines/{Id}/commands", async payload =>
         {
-            // Task.Yield ensures this method is asynchronous and yields control to allow other tasks to run.
-            await Task.Yield();
-            
-            // Log a message indicating that the Binder has connected to the MQTT broker.
-            Console.WriteLine($"🔗 [{Name}] Connected to MQTT broker.");
-        }
+            dynamic cmd = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+            if ((string)cmd?.cmd == "start")
+            {
+                Guid bookId = Guid.Parse((string)cmd.jobId);
+                // optionally verify prerequisites
+                var printingStatus = await Db.GetStageStatusAsync(bookId, "printing");
+                var coverStatus = await Db.GetStageStatusAsync(bookId, "cover");
+                if (printingStatus != "done" || coverStatus != "done")
+                {
+                    // send an error or requeue
+                    await Mqtt.PublishAsync("scheduler/alerts", Newtonsoft.Json.JsonConvert.SerializeObject(new { level = "warning", message = "Binder received start before prerequisites done", bookId, printingStatus, coverStatus }));
+                    return;
+                }
+                await Db.SetMachineBusyAsync(Id, true);
+                await DoBindingAsync(bookId);
+            }
+        });
+    }
 
-        // BindBookAsync is an asynchronous method that simulates binding a book.
-        // It takes the book's name as a parameter.
-        public async Task BindBookAsync(string bookName)
+    private async Task DoBindingAsync(Guid bookId)
+    {
+        int percent = 0;
+        while (percent < 100)
         {
-            // Log a message indicating which book is being bound.
-            Console.WriteLine($"📚 [{Name}] Binding book: {bookName}");
-            
-            // Simulate the binding process with a delay of 500 milliseconds.
-            await Task.Delay(500); 
+            await Task.Delay(1000);
+            percent += 20; // simulate binding chunks
+            if (percent > 100) percent = 100;
+            await PublishProgressAsync(bookId, "binding", percent, new { step = percent });
         }
     }
 }

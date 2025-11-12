@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Kasper\\Desktop\\BookScheduler_MQTT\\BookScheduler.csproj": {}
+    "C:\\Users\\Kasper\\Desktop\\Advanced-Architecture\\src\\BookScheduler_MQTT\\BookScheduler.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Kasper\\Desktop\\BookScheduler_MQTT\\BookScheduler.csproj": {
+    "C:\\Users\\Kasper\\Desktop\\Advanced-Architecture\\src\\BookScheduler_MQTT\\BookScheduler.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kasper\\Desktop\\BookScheduler_MQTT\\BookScheduler.csproj",
+        "projectUniqueName": "C:\\Users\\Kasper\\Desktop\\Advanced-Architecture\\src\\BookScheduler_MQTT\\BookScheduler.csproj",
         "projectName": "BookScheduler",
-        "projectPath": "C:\\Users\\Kasper\\Desktop\\BookScheduler_MQTT\\BookScheduler.csproj",
+        "projectPath": "C:\\Users\\Kasper\\Desktop\\Advanced-Architecture\\src\\BookScheduler_MQTT\\BookScheduler.csproj",
         "packagesPath": "C:\\Users\\Kasper\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kasper\\Desktop\\BookScheduler_MQTT\\obj\\",
+        "outputPath": "C:\\Users\\Kasper\\Desktop\\Advanced-Architecture\\src\\BookScheduler_MQTT\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -43,15 +43,28 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.66, )"
+            },
             "MQTTnet": {
               "target": "Package",
-              "version": "[4.3.2.930, )"
+              "version": "[4.*, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.4, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[9.0.4, )"
             }
           },
           "imports": [
@@ -70,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

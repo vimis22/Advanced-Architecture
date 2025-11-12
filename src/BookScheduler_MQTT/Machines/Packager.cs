@@ -1,32 +1,41 @@
 using System;
 using System.Threading.Tasks;
+using BookScheduler_MQTT.Services;
 
-namespace BookScheduler.Machines
+public class Packager : BaseMachine
 {
-    // Packager represents a machine that packages books.
-    // Inherits from BaseMachine, so it has a Name and MQTT functionality.
-    public class Packager : BaseMachine
+    public Packager(Guid id, string name, MqttClientService mqtt, DbHelper db) : base(id, name, "packager", mqtt, db) { }
+
+    public override async Task HandleCommandsAsync()
     {
-        // Constructor: sets the name of the Packager and passes it to the base class.
-        public Packager(string name) : base(name) { }
-
-        // SubscribeAsync: asynchronous method to "subscribe" the machine to the MQTT broker.
-        // Currently just simulates the subscription with Task.Yield and logs a message.
-        public override async Task SubscribeAsync()
+        await Mqtt.SubscribeAsync($"machines/{Id}/commands", async payload =>
         {
-            await Task.Yield(); // Ensures the method is truly asynchronous
-            Console.WriteLine($"🔗 [{Name}] Connected to MQTT broker.");
-        }
+            dynamic cmd = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+            if ((string)cmd?.cmd == "start")
+            {
+                Guid bookId = Guid.Parse((string)cmd.jobId);
+                // verify binding is done
+                var bindingStatus = await Db.GetStageStatusAsync(bookId, "binding");
+                if (bindingStatus != "done")
+                {
+                    await Mqtt.PublishAsync("scheduler/alerts", Newtonsoft.Json.JsonConvert.SerializeObject(new { level = "warning", message = "Packager start before binding done", bookId }));
+                    return;
+                }
+                await Db.SetMachineBusyAsync(Id, true);
+                await DoPackagingAsync(bookId);
+            }
+        });
+    }
 
-        // PackageBookAsync: simulates the process of packaging a book.
-        // bookName: the name of the book to be packaged.
-        public async Task PackageBookAsync(string bookName)
+    private async Task DoPackagingAsync(Guid bookId)
+    {
+        int percent = 0;
+        while (percent < 100)
         {
-            // Log that the book is being packaged
-            Console.WriteLine($"📦 [{Name}] Packaging book: {bookName}");
-
-            // Simulate packaging delay
-            await Task.Delay(500);
+            await Task.Delay(800);
+            percent += 25;
+            if (percent > 100) percent = 100;
+            await PublishProgressAsync(bookId, "packaging", percent, new { stage = percent });
         }
     }
 }
