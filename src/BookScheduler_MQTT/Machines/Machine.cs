@@ -1,78 +1,62 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using BookScheduler_MQTT.Services;
 
-namespace BookScheduler.Machines
+public abstract class BaseMachine
 {
-    // Represents a machine in our book production process. In this case Binder, Printer or packager
-    public class Machine
+    public Guid Id { get; protected set; }
+    public string? Name { get; protected set; }
+    public string? Type { get; protected set; }
+    protected readonly MqttClientService Mqtt;
+    protected readonly DbHelper Db;
+    private Timer _heartbeatTimer;
+
+    protected BaseMachine(Guid id, string name, string type, MqttClientService mqtt, DbHelper db)
     {
-        // The name of the machine (e.g., "Printer 1")
-        public string Name { get; }
+        Id = id;
+        Name = name;
+        Type = type;
+        Mqtt = mqtt;
+        Db = db;
+        // Heartbeat every 10 seconds
+        _heartbeatTimer = new Timer(async _ => await SendHeartbeatAsync(), null, 0, 10_000);
+    }
 
-        // Indicates whether the machine is currently in use
-        public bool IsBusy { get; private set; } = false;
+    protected virtual async Task SendHeartbeatAsync()
+    {
+        var payload = new { machineId = Id, name = Name, type = Type, timestamp = DateTime.UtcNow };
+        await Mqtt.PublishAsync($"machines/{Id}/status", JsonConvert.SerializeObject(payload));
+        await Db.SetMachineHeartbeatAsync(Id, true);
+    }
 
-        // Constructor to initialize the machine with a name
-        public Machine(string name)
+    // publish job progress. When progress==100 publish done topic
+    protected async Task PublishProgressAsync(Guid bookId, string stage, int progress, object extra = null)
+    {
+        var payload = new { bookId = bookId, stage = stage, progress = progress, machineId = Id, extra };
+        await Mqtt.PublishAsync($"jobs/{bookId}/stages/{stage}/progress", JsonConvert.SerializeObject(payload));
+        await Db.InsertJobEventAsync(null, Id, "progress", payload);
+        await Db.UpdateStageProgressAsync(await ResolveStageId(bookId, stage), progress, null);
+        if (progress >= 100)
         {
-            Name = name;
+            await Mqtt.PublishAsync($"jobs/{bookId}/stages/{stage}/done", JsonConvert.SerializeObject(new { bookId = bookId, stage = stage, machineId = Id }));
+            await Db.InsertJobEventAsync(await ResolveStageId(bookId, stage), Id, "done", new { bookId, stage });
+            await Db.SetMachineBusyAsync(Id, false);
         }
+    }
 
-        // Runs a specified operation asynchronously for a given book
-        // bookId: the ID of the book being processed
-        // operation: the type of operation (e.g., "Printing", "Binding")
-        // duration: how long the operation takes (in milliseconds)
-        // token: cancellation token to stop the operation if needed
-        public async Task RunAsync(int bookId, string operation, int duration, CancellationToken token)
-        {
-            // Prevent running if the machine is already busy
-            if (IsBusy)
-                throw new InvalidOperationException($"{Name} is already in use!");
+    private async Task<Guid?> ResolveStageId(Guid bookId, string stage)
+    {
+        var s = await Db.GetBookStageAsync(bookId, stage);
+        return s?.Id;
+    }
 
-            // Mark machine as busy
-            IsBusy = true;
+    // called to handle incoming commands over MQTT (e.g. start job)
+    public abstract Task HandleCommandsAsync();
 
-            // Print that the operation has started
-            PrintStatus($"{Name} started {operation} for Book #{bookId}.", operation);
-
-            try
-            {
-                // Simulate the operation taking some time asynchronously
-                await Task.Delay(duration, token);
-
-                // Print that the operation has finished
-                PrintStatus($"{Name} finished {operation} for Book #{bookId}.", operation);
-            }
-            finally
-            {
-                // Always reset the machine to not busy, even if an exception occurs
-                IsBusy = false;
-            }
-        }
-
-        // Prints the status of the machine operation to the console
-        // The color depends on the type of operation
-        private void PrintStatus(string message, string operation)
-        {
-            // Lock console output to avoid mixing messages from multiple machines (Still dosne't fucking work fully)
-            lock (Console.Out)
-            {
-                // Set console color based on operation type to get overview
-                Console.ForegroundColor = operation switch
-                {
-                    "Printing" => ConsoleColor.Cyan,
-                    "Binding" => ConsoleColor.Green,
-                    "Packaging" => ConsoleColor.Yellow,
-                    _ => ConsoleColor.Gray
-                };
-
-                // Output the message
-                Console.WriteLine(message);
-
-                // Reset console color to default
-                Console.ResetColor();
-            }
-        }
+    public virtual void Dispose()
+    {
+        _heartbeatTimer?.Dispose();
     }
 }

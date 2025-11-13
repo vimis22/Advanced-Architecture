@@ -1,30 +1,49 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using BookScheduler.Machines;
+using Newtonsoft.Json;
+using BookScheduler_MQTT.Services;
+using BookScheduler_MQTT;
 
-namespace BookScheduler
+namespace BookScheduler_MQTT
 {
     public class Scheduler
     {
-        private readonly MachineManager machineManager = new();
+        private readonly DbHelper _db;
+        private readonly MqttClientService _mqtt;
 
-        public async Task ProduceBooksAsync(int bookCount)
+        public Scheduler(DbHelper db, MqttClientService mqtt)
         {
-            Console.WriteLine($"\n📚 Scheduling production of {bookCount} books...\n");
+            _db = db;
+            _mqtt = mqtt;
+        }
 
-            for (int i = 1; i <= bookCount; i++)
+        public async Task StartAsync()
+        {
+            Console.WriteLine("Scheduler started.");
+
+            while (true)
             {
-                Console.WriteLine($"📖 Scheduling Book {i}...\n");
-
-               await machineManager.SendJobAsync("books/print", "Book 1");
-               await machineManager.SendJobAsync("books/print", "Book 2");
-               await machineManager.SendJobAsync("books/print", "Book 3");
-
-
-                Console.WriteLine($"✅ Book {i} completed!\n");
+                await RunCycleAsync();
+                await Task.Delay(5000); // run every 5 seconds
             }
+        }
 
-            Console.WriteLine("\n🎉 All books have been produced!");
+        private async Task RunCycleAsync()
+        {
+            var machines = (await _db.GetMachinesAsync()).ToList();
+            var books = (await _db.GetPendingBooksAsync()).ToList();
+
+            var availablePrinter = machines.FirstOrDefault(m => m.Type == "printer" && m.Status == "idle");
+
+            if (availablePrinter != null && books.Count > 0)
+            {
+                var book = books.First();
+                Console.WriteLine($"Assigning '{book.Title}' to {availablePrinter.Name}");
+                await _mqtt.PublishAsync($"machines/{availablePrinter.Id}/job", JsonConvert.SerializeObject(book));
+
+                await _db.SetMachineStatusAsync(availablePrinter.Id, "running");
+            }
         }
     }
 }

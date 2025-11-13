@@ -1,24 +1,43 @@
 using System;
 using System.Threading.Tasks;
+using BookScheduler_MQTT.Services;
 
-namespace BookScheduler.Machines
+public class Binder : BaseMachine
 {
-    public class Binder
+    public Binder(Guid id, string name, MqttClientService mqtt, DbHelper db) : base(id, name, "binder", mqtt, db) { }
+
+    public override async Task HandleCommandsAsync()
     {
-        private readonly MqttClientService _mqtt;
-
-        public Binder()
+        await Mqtt.SubscribeAsync($"machines/{Id}/commands", async payload =>
         {
-            _mqtt = new MqttClientService("Binding");
-            _mqtt.ConnectAsync().Wait();
-            _mqtt.SubscribeAsync("books/bind").Wait();
-        }
+            dynamic cmd = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
+            if ((string)cmd?.cmd == "start")
+            {
+                Guid bookId = Guid.Parse((string)cmd.jobId);
+                // optionally verify prerequisites
+                var printingStatus = await Db.GetStageStatusAsync(bookId, "printing");
+                var coverStatus = await Db.GetStageStatusAsync(bookId, "cover");
+                if (printingStatus != "done" || coverStatus != "done")
+                {
+                    // send an error or requeue
+                    await Mqtt.PublishAsync("scheduler/alerts", Newtonsoft.Json.JsonConvert.SerializeObject(new { level = "warning", message = "Binder received start before prerequisites done", bookId, printingStatus, coverStatus }));
+                    return;
+                }
+                await Db.SetMachineBusyAsync(Id, true);
+                await DoBindingAsync(bookId);
+            }
+        });
+    }
 
-        public async Task PrintBookAsync(string book)
+    private async Task DoBindingAsync(Guid bookId)
+    {
+        int percent = 0;
+        while (percent < 100)
         {
-            Console.WriteLine($"🖨️ Binding book: {book}");
             await Task.Delay(1000);
-            await _mqtt.PublishAsync("books/package", book);
+            percent += 20; // simulate binding chunks
+            if (percent > 100) percent = 100;
+            await PublishProgressAsync(bookId, "binding", percent, new { step = percent });
         }
     }
 }
