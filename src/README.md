@@ -1,33 +1,77 @@
-# Description of the Architecture of API-Gateway & Orchestrator
-I have made an description of the architecture that I have tried to make.
+# Description of External -> API -> Orchestration
+- The purpose with this readme is to explain how the Production Order works from External Service to Orchestrator via the API-Gateway.
 
-## What is Spring and Why am I using it?
-- Inversion Control and Dependency Injection: The Spring Framework controls creation and the lifecycle of objects (beans).
-- Modularity: We can use the Spring Framework to create modular applications.
-- Configuration over Konvention: We can use Annotation and Configuration-Classes instead of XMR-Filer.
-- Testability: Dependency Injection makes it easy to mock and test our application.
+## Overall Overview:
+- External-Service: This is the service, where the submits an Production Order HTTP Request to the API-Gateway.
+- API-Gateway: This forwards the Request to the Orchestrator Service and logs the request/response.
+- Orchestrator: Validates the Request, Orchestrates the Domain logic to create an Production Order, through the Repository Port and publishes a domain event to Kafka (via the publisher post).
 
-## Core Ideas:
-- Inversion of Control: The Container creates and controls the objects.
-- Dependency Injection: The Container injects dependencies, instead of being manually created inside each Class.
+### Deep Dive with Code Structure & Examples
+#### Starting Steps
+We start out at the External Service, where we see that the User submits a POST Request to the API-Gateway.
+In this context, we see that we are using the JSON-Body by using title, author, pages, coverType and quantity.
+``
+// TypeScript
+async function submitOrder(payload) {
+  const res = await fetch("http://localhost:8080/api/v1/orchestrator/orders", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+``
 
-## Spring Annotations:
-- @SpringBootApplication: Man kan se det som Main, der kører den samlet operation.
-- @Configuration: This is used to define a Configuration-Class.
-- @Bean: This method returns a bean, such containers register and can be injected other places.
-- @Component: This marks a class, like a component or bean, where it is auto-detected through component scanning.
-- @Service: This specialises a component for a service-layer, but functions the same as a component.
-- @Repository: Specialization of @Component for the persistent layer and translates persistence-related exceptions into Spring's DataAccessException hiearchy.
-- @RestController: @Controller + @ResponseBody by default.
-- @Controller: Web Controller: Typically returns views or models.
-- @RequestMapping/@GetMapping/@PostMapping: Binds HTTP Method and path to a controller method.
+PS: Note that to run the code for External Service, you need to run: npm run dev .
+#### API-Gateway
+The API-Gateway is the middleman between the External Service and the Orchestrator Service.
+We see that the API-Gateway runs the Spring Boot Application, that helps in forwarding towards the Orchestrator.
+The way the API-Gateway forwards towards the production order is through route-mapping inside the application.yml.
 
-## Spring Cloud Gateway:
-- @EnableKafka: Enables Kafka support.
-- @KafkaListener: Used to listen to a topic.
-- @KafkaHandler: Used to handle a message.
-- @KafkaTemplate: Used to send messages to a topic, or produces an API.
+#### Orchestrator
+The Orchestrator is the core of the Production Order.
+We see that the Orchestrator is a Spring Boot Application, that is responsible for orchestrating the Production Order.
+We see that the Orchestrator is responsible for validating the request, and orchestrating the domain logic.
+We see that the Orchestrator is responsible for publishing a domain event to Kafka.
 
-## Spring for Kafka:
-- @KafkaListener: Used to listen to a topic.
-- @KafkaHandler: Used to handle a message.
+The following example shows that the OrderIngestController, which is the entry point for getting the Production order from API-Gateway.
+´´
+// Java
+@RestController
+@RequestMapping("/orders")
+public class OrderIngestController {
+
+private final OrderOrchestrationService orchestrationService;
+
+public OrderIngestController(OrderOrchestrationService orchestrationService) {
+this.orchestrationService = orchestrationService;
+}
+
+@PostMapping
+public ResponseEntity<OrderResponse> create(@RequestBody CreateOrderRequest request) {
+// 1) Map API DTO -> domain input
+BookDetails details = ApiOrderMapper.toDomain(request);
+
+    // 2) Call use case
+    ProductionOrder order = orchestrationService.createOrder(details, request.getQuantity());
+
+    // 3) Map domain -> API DTO
+    OrderResponse response = ApiOrderMapper.toResponse(order);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+}
+
+@GetMapping("/{orderId}")
+public ResponseEntity<OrderResponse> get(@PathVariable Long orderId) {
+try {
+ProductionOrder order = orchestrationService.getOrder(orderId);
+return ResponseEntity.ok(ApiOrderMapper.toResponse(order));
+} catch (OrderOrchestrationService.OrderNotFoundException e) {
+return ResponseEntity.notFound().build();
+}
+}
+}
+´´
+
+More Information will be written as follows.
