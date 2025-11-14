@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
-  # Datastore
   postgres:
     image: postgres:15-alpine
+    container_name: postgres
     environment:
       POSTGRES_DB: bookproduction
       POSTGRES_USER: postgres
@@ -13,9 +11,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # Messaging
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -24,18 +22,18 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
     depends_on:
       - zookeeper
-    ports:
-      - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
 
-  # Backend services
   orchestrator:
     build:
       context: ../Orchestrator
@@ -56,29 +54,25 @@ services:
 
   api-gateway:
     build:
-      context: ../API-Gateway
+      context: .
       dockerfile: Dockerfile
     container_name: api-gateway
     depends_on:
       - orchestrator
     environment:
       SERVER_PORT: 8080
-      # Add other envs if your gateway needs to know orchestrator url
-      # ORCHESTRATOR_URL: http://orchestrator:8082
     ports:
       - "8080:8080"
 
-  # React UI served via Nginx
   external-service:
     build:
-      context: .
+      context: ../External-Service
       dockerfile: Dockerfile
     container_name: external-service
     depends_on:
       - api-gateway
     ports:
-      - "8086:80"
-    # The UI will call /api which Nginx proxies to api-gateway inside the network.
+      - "8085:80"
 
 volumes:
   postgres_data:
