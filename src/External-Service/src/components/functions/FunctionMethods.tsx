@@ -9,7 +9,8 @@ export function useOrderForm() {
         title: "",
         author: "",
         pages: "",
-        coverType: "SOFT",
+        coverType: "",
+        pageType: "",
         quantity: "",
     });
     const [loading, setLoading] = useState(false);
@@ -34,16 +35,20 @@ export function useOrderForm() {
             return;
         }
 
+        // CURRENT JSON sent to API-Gateway (flat). This is the single source of truth for the UI for now.
+        // When backend accepts nested { books: { ... } }, switch here accordingly.
         const body: Payload = {
             title: form.title,
             author: form.author,
             pages: pagesNumber,
             coverType: form.coverType,
+            pageType: form.pageType,
             quantity: quantityNumber,
         };
 
         try {
             setLoading(true);
+            // API-Gateway public URL. Gateway forwards body unchanged to Orchestrator at /api/v1/orchestrator/orders
             const res = await fetch("http://localhost:8080/api/v1/orchestrator/orders", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

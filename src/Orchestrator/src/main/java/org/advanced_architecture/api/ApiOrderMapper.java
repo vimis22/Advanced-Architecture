@@ -21,6 +21,7 @@ public final class ApiOrderMapper {
                 request.author(),
                 request.pages(),
                 request.coverType(),
+                request.pageType(),
                 request.quantity()
         );
     }

@@ -17,18 +17,43 @@ public final class OrderEventPayloadMapper {
 
     /**
      * Builds the payload for the "OrderCreated" event.
-     * The structure and keys are intentionally preserved to avoid any behavior change.
+     * TARGET CONTRACT (Kafka):
+     * {
+     *   "order_id": string,
+     *   "timestamp": string,
+     *   "status": string,
+     *   "books": {
+     *     "book_id": string | null,
+     *     "title": string,
+     *     "author": string,
+     *     "pages": number,
+     *     "quantity": number,
+     *     "covertype": "HARDCOVER"|"SOFTCOVER",
+     *     "pagetype": "GLOSSY"|"MATTE"
+     *   },
+     *   "ack_required": true
+     * }
+     * Notes:
+     * - book_id is currently not part of our domain; we publish null for now and will populate when available.
+     * - status is the lowercase of domain state (e.g., PENDING -> "pending").
      */
     public static Map<String, Object> buildOrderCreatedEvent(ProductionOrder order) {
         Map<String, Object> event = new HashMap<>();
-        event.put("orderId", order.getId());
-        event.put("title", order.getBookDetails().getTitle());
-        event.put("author", order.getBookDetails().getAuthor());
-        event.put("pages", order.getBookDetails().getPages());
-        event.put("coverType", order.getBookDetails().getCoverType());
-        event.put("quantity", order.getBookDetails().getQuantity());
-        event.put("estimatedCost", order.getBookDetails().getEstimatedCost());
-        event.put("createdAt", order.getCreatedAt().toString());
+        event.put("order_id", String.valueOf(order.getId()));
+        event.put("timestamp", order.getCreatedAt().toString());
+        event.put("status", order.getState().toString().toLowerCase());
+
+        Map<String, Object> books = new HashMap<>();
+        books.put("book_id", null); // TODO: fill from catalog when available
+        books.put("title", order.getBookDetails().getTitle());
+        books.put("author", order.getBookDetails().getAuthor());
+        books.put("pages", order.getBookDetails().getPages());
+        books.put("quantity", order.getBookDetails().getQuantity());
+        books.put("covertype", order.getBookDetails().getCoverType().name());
+        books.put("pagetype", order.getBookDetails().getPageType().name());
+
+        event.put("books", books);
+        event.put("ack_required", true);
         return event;
     }
 }
