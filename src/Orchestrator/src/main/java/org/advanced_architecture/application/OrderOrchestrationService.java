@@ -28,8 +28,8 @@ public class OrderOrchestrationService {
     }
 
     @Transactional
-    public ProductionOrder orchestrateOrder(BookDetails bookDetails) {
-        logger.info("Starting orchestration for book: {}", bookDetails.getTitle());
+    public ProductionOrder createOrder(BookDetails bookDetails) {
+        logger.info("Creating order for book: {} with quantity: {}", bookDetails.getTitle(), bookDetails.getQuantity());
 
         ProductionOrder order = ProductionOrder.createOrder(bookDetails);
 
@@ -53,10 +53,17 @@ public class OrderOrchestrationService {
         return savedOrder;
     }
 
+    @Transactional
+    @Deprecated
+    public ProductionOrder orchestrateOrder(BookDetails bookDetails) {
+        logger.warn("orchestrateOrder() is deprecated. Use createOrder() instead.");
+        return createOrder(bookDetails);
+    }
+
     @Transactional(readOnly = true)
     public ProductionOrder getOrder(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order ikke fundet: " + orderId));
+                .orElseThrow(() -> new OrderNotFoundException("Order is not found: " + orderId));
     }
 
     public static class OrderNotFoundException extends RuntimeException {

@@ -1,0 +1,197 @@
+version: '3.8'
+
+services:
+  # ==================== Infrastructure ====================
+
+  # PostgreSQL Database - Used by Orchestrator and BookScheduler
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bookproduction
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - advanced-architecture-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Used by API Gateway for rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - advanced-architecture-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Zookeeper - Required for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - advanced-architecture-network
+
+  # Kafka - Message broker for event-driven architecture
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    networks:
+      - advanced-architecture-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # MQTT Broker - For IoT/edge device communication
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./src/BookScheduler_MQTT/mosquitto/config:/mosquitto/config:ro
+    networks:
+      - advanced-architecture-network
+
+  # ==================== Microservices ====================
+
+  # Orchestrator - Core business logic and domain orchestration
+  orchestrator:
+    build:
+      context: ./src/Orchestrator
+      dockerfile: Dockerfile
+    container_name: orchestrator
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_NAME: orchestrator
+      DB_URL: jdbc:postgresql://postgres:5432/bookproduction
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SERVER_PORT: 8082
+    expose:
+      - "8082"
+    networks:
+      - advanced-architecture-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # API Gateway - Entry point for all external requests
+  api-gateway:
+    build:
+      context: ./src/API-Gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: unless-stopped
+    depends_on:
+      orchestrator:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      ORCHESTRATOR_URI: http://orchestrator:8082
+    ports:
+      - "8080:8080"
+    networks:
+      - advanced-architecture-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # External Service - Frontend UI (React/Vite + Nginx)
+  external-service:
+    build:
+      context: ./src/External-Service
+      dockerfile: Dockerfile
+    container_name: external-service
+    restart: unless-stopped
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    networks:
+      - advanced-architecture-network
+
+  # Book Scheduler - C# service for MQTT scheduling
+  book-scheduler:
+    build:
+      context: ./src/BookScheduler_MQTT
+      dockerfile: Dockerfile
+    container_name: book-scheduler
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=bookscheduler;Username=postgres;Password=postgres"
+      MqttSettings__BrokerHost: mosquitto
+      MqttSettings__BrokerPort: 1883
+    networks:
+      - advanced-architecture-network
+
+# ==================== Networks & Volumes ====================
+
+networks:
+  advanced-architecture-network:
+    driver: bridge
+    name: advanced-architecture-network
+
+volumes:
+  postgres_data:
+    name: advanced-architecture-postgres-data

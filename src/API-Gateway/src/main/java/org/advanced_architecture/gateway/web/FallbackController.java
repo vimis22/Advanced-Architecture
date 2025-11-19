@@ -27,24 +27,44 @@ import java.util.Map;
 @RequestMapping(path = "/fallback", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FallbackController {
 
-    @RequestMapping(path = "/orchestrator", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "/orchestrator", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
     public ResponseEntity<Map<String, Object>> orchestratorFallback(ServerHttpRequest request) {
         Map<String, Object> body = Map.of(
                 "service", "orchestrator",
-                "message", "Orchestrator is temporarily unavailable",
+                "status", "unavailable",
+                "error", "Service Unavailable",
+                "message", "The Orchestrator service is temporarily unavailable. Please try again later.",
                 "path", request.getPath().value(),
-                "timestamp", Instant.now().toString()
+                "timestamp", Instant.now().toString(),
+                "suggestion", "Check service health or contact system administrator if the problem persists"
         );
         return new ResponseEntity<>(body, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    @RequestMapping(path = "/scheduler", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "/scheduler", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
     public ResponseEntity<Map<String, Object>> schedulerFallback(ServerHttpRequest request) {
         Map<String, Object> body = Map.of(
                 "service", "scheduler",
-                "message", "Scheduler is temporarily unavailable",
+                "status", "unavailable",
+                "error", "Service Unavailable",
+                "message", "The Scheduler service is temporarily unavailable. Please try again later.",
                 "path", request.getPath().value(),
-                "timestamp", Instant.now().toString()
+                "timestamp", Instant.now().toString(),
+                "suggestion", "Check service health or contact system administrator if the problem persists"
+        );
+        return new ResponseEntity<>(body, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @RequestMapping(path = "/default", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+    public ResponseEntity<Map<String, Object>> defaultFallback(ServerHttpRequest request) {
+        Map<String, Object> body = Map.of(
+                "service", "unknown",
+                "status", "unavailable",
+                "error", "Service Unavailable",
+                "message", "The requested service is temporarily unavailable. Please try again later.",
+                "path", request.getPath().value(),
+                "timestamp", Instant.now().toString(),
+                "suggestion", "Contact system administrator if the problem persists"
         );
         return new ResponseEntity<>(body, HttpStatus.SERVICE_UNAVAILABLE);
     }
