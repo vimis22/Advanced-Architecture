@@ -9,8 +9,8 @@ export function useOrderForm() {
         title: "",
         author: "",
         pages: "",
-        coverType: "",
-        pageType: "",
+        coverType: "SOFTCOVER",
+        pageType: "GLOSSY",
         quantity: "",
     });
     const [loading, setLoading] = useState(false);

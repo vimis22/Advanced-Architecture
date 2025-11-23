@@ -1,4 +1,17 @@
 # Description of External -> API -> Orchestration
+- Canonical startup (single stack)
+
+## How to run the full stack (canonical)
+The entire system (Postgres, Redis, Zookeeper, Kafka, Orchestrator, API-Gateway, External-Service) is now started from a single Compose file:
+
+```
+cd src/API-Gateway
+docker compose up --build
+```
+
+Notes:
+- Do not run `docker compose` in `src/External-Service` or `src/Orchestrator`. Their compose files are intentionally empty to avoid accidental duplicate infra.
+- Ports in use: Postgres 5432, Redis 6379, Zookeeper 2181, Kafka 9092, API-Gateway 8080, External-Service 5173 (mapped to container port 80), Orchestrator exposed on 8082 inside the network.
 - The purpose with this readme is to explain how the Production Order works from External Service to Orchestrator via the API-Gateway.
 
 ## Overall Overview:
