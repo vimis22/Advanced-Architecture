@@ -1,30 +1,133 @@
 services:
   mosquitto:
-    image: eclipse-mosquitto:2.0.18   # pin a known-good version
+    image: eclipse-mosquitto:2.0.18
+    container_name: mosquitto
     restart: unless-stopped
     ports:
-      - "${MQTT_TCP_PORT:-1883}:1883"       # MQTT TCP for Picos / tools
-      - "${MQTT_WS_PORT:-8080}:8080"        # MQTT over WebSockets for dashboard
+      - "1883:1883"
+      - "8080:8080"
     volumes:
-      # map your actual conf file path
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-      # optional: if you use these, map them too
-      - ./config/passwords:/mosquitto/config/passwords:rw
-      - ./config/acl:/mosquitto/config/acl:ro
-      # data/log dirs (persisted as local folders)
-      - ./data:/mosquitto/data
+      - ./mosquitto-data:/mosquitto/data
       - ./log:/mosquitto/log
 
   dashboard:
-    build: ./mqtt-dashboard
+    image: nginx:1.27-alpine
+    container_name: mqtt-dashboard
     restart: unless-stopped
-    environment:
-      - DASH_DEFAULT_WS=${DASH_DEFAULT_WS:-ws://localhost:8080/mqtt}
-    ports:
-      - "${DASH_PORT:-8085}:80"
     depends_on:
       - mosquitto
+    ports:
+      - "8081:80"
+    volumes:
+      - ./mqtt-dashboard:/usr/share/nginx/html:ro
 
-volumes:
-  mosq-data:
-  mosq-log:
+  simulator-a:
+    build: ./simulator
+    image: edge-mqtt-simulator
+    environment:
+      BROKER_HOST: mosquitto
+      BROKER_PORT: "1883"
+      MACHINE_TYPE: "A"
+      START_POWER: "on"
+    depends_on: [mosquitto]
+    restart: always
+    command: sh -c "sleep 10 && python machine.py"
+
+  simulator-b:
+    image: edge-mqtt-simulator
+    environment:
+      BROKER_HOST: mosquitto
+      BROKER_PORT: "1883"
+      MACHINE_TYPE: "B"
+      START_POWER: "on"
+    depends_on: [mosquitto]
+    restart: always
+    command: sh -c "sleep 10 && python machine.py"
+
+  kafka:
+    image: apache/kafka:3.8.0
+    container_name: kafka
+    restart: unless-stopped
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./kafka-data:/var/lib/kafka/data
+
+  connect:
+    image: debezium/connect:2.7.3.Final
+    container_name: connect
+    restart: unless-stopped
+    depends_on:
+      - kafka
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - GROUP_ID=connect-cluster
+      - CONFIG_STORAGE_TOPIC=_connect_configs
+      - OFFSET_STORAGE_TOPIC=_connect_offsets
+      - STATUS_STORAGE_TOPIC=_connect_status
+      - KEY_CONVERTER=org.apache.kafka.connect.storage.StringConverter
+      - VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - VALUE_CONVERTER_SCHEMAS_ENABLE=false
+      - KAFKA_CONNECT_PLUGINS_DIR=/kafka/connect/plugins
+    ports:
+      - "8083:8083"   
+    volumes:
+      - ./connect:/kafka/connect
+
+  timescaledb:
+    image: timescale/timescaledb:2.23.0-pg16
+    container_name: timescaledb
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=tsdbpass
+      - POSTGRES_USER=tsdbuser
+      - POSTGRES_DB=grid
+    ports:
+      - "5433:5432"
+
+  db-gateway:
+    build: ./db-gateway
+    container_name: db-gateway
+    restart: unless-stopped
+    environment:
+      DB_HOST: timescaledb
+      DB_PORT: "5432"
+      DB_USER: tsdbuser
+      DB_PASS: tsdbpass
+      DB_NAME: grid
+    ports:
+      - "8090:8090"
+    depends_on:
+      - timescaledb
+      
+  redpanda:
+    image: redpandadata/console:latest 
+    container_name: redpanda
+    restart: unless-stopped
+    ports:
+      - "8094:8080"                    
+    environment:
+      KAFKA_BROKERS: "kafka:9092"        
+      KAFKA_TLS_ENABLED: "false"
+      KAFKA_SASL_ENABLED: "false"
+      CONNECT_ENABLED: "true"            
+      CONNECT_CLUSTERS_0_NAME: "connect"
+      CONNECT_CLUSTERS_0_ADDRESS: "http://connect:8083"
+    depends_on:
+      - kafka
+      - connect

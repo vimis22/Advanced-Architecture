@@ -1,0 +1,25 @@
+{
+  "name": "timescale-sink-raw",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max": "1",
+    "topics": "iot.mqtt.raw",
+    "connection.url": "jdbc:postgresql://timescaledb:5432/grid",
+    "connection.user": "tsdbuser",
+    "connection.password": "tsdbpass",
+    "insert.mode": "insert",
+    "auto.create": "false",
+    "auto.evolve": "false",
+    "pk.mode": "none",
+    "table.name.format": "telemetry_raw",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter.schemas.enable": "false",
+    "transforms": "HoistField",
+    "transforms.HoistField.type": "org.apache.kafka.connect.transforms.HoistField$Value",
+    "transforms.HoistField.field": "payload",
+    "errors.tolerance": "all",
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true"
+  }
+}

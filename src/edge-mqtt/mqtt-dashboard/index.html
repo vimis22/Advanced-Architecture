@@ -1,64 +1,63 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>MQTT Dashboard</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h2>MQTT Dashboard</h2>
 
-    <!-- Connect -->
-    <div class="row">
-      <label>Broker WS URL:</label>
-      <input id="url" size="36" value="ws://localhost:8080/mqtt" />
-      <label>User:</label><input id="user" size="10" placeholder="(optional)" />
-      <label>Pass:</label><input id="pass" size="10" placeholder="(optional)" type="password" />
-      <button id="connect">Connect</button>
-      <span id="status" class="badge">disconnected</span>
+<head>
+  <meta charset="utf-8" />
+  <title>Device Status Board</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <h2>Device Status</h2>
+
+  <div class="row">
+    <label>Broker WS URL:</label>
+    <input id="url" size="36" value="ws://192.168.0.68:8080/mqtt" />
+    <label>User:</label><input id="user" size="10" placeholder="(optional)" />
+    <label>Pass:</label><input id="pass" size="10" placeholder="(optional)" type="password" />
+    <button id="connect">Connect</button>
+    <span id="status" class="badge">disconnected</span>
+  </div>
+
+  <div class="row">
+    <label>Subscribe:</label>
+    <input id="autoTopic" size="36" value="" />
+    <button id="subBtn">Subscribe</button>
+    <span class="muted">Also tracks <code>status/+</code></span>
+  </div>
+
+  <div class="row">
+     <label> Topic:</label>
+     <input id="pubTopic" placeholder="cmd" />
+      <label>Public Messages:</label>
+      <input id="pubMessage" placeholder="{device_id, op, value}" />
+      <button id="pubBtn">Send Command</button>
     </div>
 
-    <!-- Subscribe -->
-    <div class="row">
-      <label>Subscribe topic:</label>
-      <input id="sub" size="40" value="#" />
-      <button id="subBtn">Subscribe</button>
-      <span class="muted">Tip: use <code>#</code> to see all</span>
-    </div>
+  <h3>Devices</h3>
+  <div id="deviceGrid" class="grid"></div>
 
-    <!-- Add devices -->
-    <div class="row">
-      <label>Add device ID:</label>
-      <input id="addDev" placeholder="pico-xx" />
-      <button id="addBtn">Add</button>
-      <span class="muted">(buttons publish to <code>pico/&lt;device&gt;/cmd</code>)</span>
-    </div>
+  <h3>Database queries</h3>
+  <div class="row">
+    <label>DB API URL:</label>
+    <input id="dbUrl" size="36" value="http://192.168.0.68/query" />
+    <button id="runQuery">Run</button>
+  </div>
+  <textarea id="sql" rows="6"
+    placeholder="SELECT device_id, ts, temp, hum, battery FROM telemetry_flat ORDER BY ts DESC LIMIT 10;"></textarea>
+  <div class="row">
+    <label>Saved queries:</label>
+    <input id="saved"></input>
+    <button id="saveQuery">Save current</button>
+    <button id="deleteQuery">Delete selected</button>
+  </div>
+  <div id="queryResults"></div>
 
-    <!-- Quick controls -->
-    <h3>Quick controls</h3>
-    <div id="deviceGrid" class="grid"></div>
+  <h3>Console</h3>
+  <div id="console"></div>
 
-    <!-- Messages -->
-    <h3>Messages</h3>
-    <table>
-      <thead><tr><th>Time</th><th>Topic</th><th>Payload</th></tr></thead>
-      <tbody id="log"></tbody>
-    </table>
+  <script src="mqtt.min.js"></script>
+  <script src="app.js"></script>
+</body>
 
-    <!-- Console -->
-    <h3>Console</h3>
-    <div id="console"></div>
-
-    <!-- Scripts: mqtt.min.js FIRST, then your app -->
-    <script src="mqtt.min.js"></script>
-    <!-- Optional CDN fallback if the local file is missing -->
-    <script>
-      if (!window.mqtt) {
-        var s=document.createElement('script');
-        s.src='https://unpkg.com/mqtt/dist/mqtt.min.js';
-        document.body.appendChild(s);
-      }
-    </script>
-    <script src="app.js"></script>
-  </body>
 </html>

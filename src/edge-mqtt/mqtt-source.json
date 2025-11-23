@@ -1,0 +1,17 @@
+{
+  "name": "mqtt-source",
+  "config": {
+    "connector.class": "io.confluent.connect.mqtt.MqttSourceConnector",
+    "tasks.max": "2",
+    "kafka.topic": "iot.mqtt.raw",
+    "mqtt.server.uri": "tcp://mosquitto:1883",
+    "mqtt.topics": "hb, progress, reroute",
+    "mqtt.qos": "1",
+    "clean.session": "true",
+    "value.converter": "org.apache.kafka.connect.converters.ByteArrayConverter",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter.schemas.enable": "false",
+    "confluent.topic.bootstrap.servers": "kafka:9092",
+    "confluent.topic.replication.factor": "1"
+  }
+}
