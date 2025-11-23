@@ -1,7 +1,7 @@
 services:
+  # Datastore
   postgres:
     image: postgres:15-alpine
-    container_name: postgres
     environment:
       POSTGRES_DB: bookproduction
       POSTGRES_USER: postgres
@@ -11,9 +11,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # Messaging
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
-    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -22,7 +22,6 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
-    container_name: kafka
     depends_on:
       - zookeeper
     environment:
@@ -34,11 +33,17 @@ services:
     ports:
       - "9092:9092"
 
+  # Optional cache for rate limiting and other features
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # Backend
   orchestrator:
     build:
       context: ../Orchestrator
       dockerfile: Dockerfile
-    container_name: orchestrator
     depends_on:
       - postgres
       - kafka
@@ -56,23 +61,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api-gateway
     depends_on:
       - orchestrator
+      - redis
     environment:
       SERVER_PORT: 8080
+      ORCHESTRATOR_URI: http://orchestrator:8082
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     ports:
       - "8080:8080"
-
-  external-service:
-    build:
-      context: ../External-Service
-      dockerfile: Dockerfile
-    container_name: external-service
-    depends_on:
-      - api-gateway
-    ports:
-      - "8085:80"
 
 volumes:
   postgres_data:

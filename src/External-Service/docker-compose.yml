@@ -40,7 +40,6 @@ services:
     build:
       context: ../Orchestrator
       dockerfile: Dockerfile
-    container_name: orchestrator
     depends_on:
       - postgres
       - kafka
@@ -58,26 +57,32 @@ services:
     build:
       context: ../API-Gateway
       dockerfile: Dockerfile
-    container_name: api-gateway
     depends_on:
       - orchestrator
+      - redis
     environment:
       SERVER_PORT: 8080
-      # Add other envs if your gateway needs to know orchestrator url
-      # ORCHESTRATOR_URL: http://orchestrator:8082
+      ORCHESTRATOR_URI: http://orchestrator:8082
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     ports:
       - "8080:8080"
+
+  # Optional cache (if API-Gateway uses Redis for rate limiting)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
 
   # React UI served via Nginx
   external-service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: external-service
     depends_on:
       - api-gateway
     ports:
-      - "8086:80"
+      - "5173:80"
     # The UI will call /api which Nginx proxies to api-gateway inside the network.
 
 volumes:
