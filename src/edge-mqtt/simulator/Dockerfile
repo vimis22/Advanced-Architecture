@@ -3,6 +3,6 @@ FROM python:3.12-alpine
 RUN pip install --no-cache-dir paho-mqtt==1.6.1
 
 WORKDIR /app
-COPY sim.py /app/sim.py
+COPY machine.py /app/machine.py
 
-ENTRYPOINT ["python", "/app/sim.py"]
+ENTRYPOINT ["sh", "-c", "sleep 10 && python /app/machine.py"]

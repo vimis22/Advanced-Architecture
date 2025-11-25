@@ -10,53 +10,37 @@ services:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./mosquitto-data:/mosquitto/data
       - ./log:/mosquitto/log
-      # uncomment if you enabled auth/ACL
-      # - ./config/passwords:/mosquitto/config/passwords:rw
-      # - ./config/acl:/mosquitto/config/acl:ro
-
   dashboard:
     image: nginx:1.27-alpine
     container_name: mqtt-dashboard
     restart: unless-stopped
+    depends_on:
+      - mosquitto
     ports:
       - "8081:80"
     volumes:
       - ./mqtt-dashboard:/usr/share/nginx/html:ro
-
-  simulator:
+  simulator-a:
     build: ./simulator
-    restart: unless-stopped
-    depends_on:
-      - mosquitto
+    image: edge-mqtt-simulator
     environment:
-      # broker
       BROKER_HOST: mosquitto
       BROKER_PORT: "1883"
-      # remove if mosquitto is still anonymous
-      # BROKER_USER: mqttuser
-      # BROKER_PASS: mqttpass
-
-      # MQTT topic layout
-      BASE_TOPIC: pico
-      TELEMETRY_TOPIC_SUFFIX: telemetry
-      STATUS_TOPIC_SUFFIX: status
-      CMD_TOPIC_SUFFIX: cmd
-
-      # profile distribution (auto-assigned per container)
-      PROFILE_DIST: "fast:10,normal:70,slow:20"
-
-      # per-profile settings
-      PROFILE_FAST_INTERVAL_MS: "200"
-      PROFILE_FAST_JITTER_MS: "50"
-
-      PROFILE_NORMAL_INTERVAL_MS: "1000"
-      PROFILE_NORMAL_JITTER_MS: "200"
-
-      PROFILE_SLOW_INTERVAL_MS: "10000"
-      PROFILE_SLOW_JITTER_MS: "500"
-
-      EXTRA_TAGS: "location=lab,batch=sim"
-
+      MACHINE_TYPE: "A"
+      START_POWER: "on"
+    depends_on: [mosquitto]
+    restart: always
+    command: sh -c "sleep 10 && python machine.py"
+  simulator-b:
+    image: edge-mqtt-simulator
+    environment:
+      BROKER_HOST: mosquitto
+      BROKER_PORT: "1883"
+      MACHINE_TYPE: "B"
+      START_POWER: "on"
+    depends_on: [mosquitto]
+    restart: always
+    command: sh -c "sleep 10 && python machine.py"
   kafka:
     image: apache/kafka:3.8.0
     container_name: kafka
@@ -79,7 +63,6 @@ services:
       - "9092:9092"
     volumes:
       - ./kafka-data:/var/lib/kafka/data
-
   connect:
     image: debezium/connect:2.7.3.Final
     container_name: connect
@@ -97,10 +80,9 @@ services:
       - VALUE_CONVERTER_SCHEMAS_ENABLE=false
       - KAFKA_CONNECT_PLUGINS_DIR=/kafka/connect/plugins
     ports:
-      - "8083:8083"   # Kafka Connect REST
+      - "8083:8083"
     volumes:
       - ./connect:/kafka/connect
-
   timescaledb:
     image: timescale/timescaledb:2.23.0-pg16
     container_name: timescaledb
@@ -111,9 +93,6 @@ services:
       - POSTGRES_DB=grid
     ports:
       - "5433:5432"
-    volumes:
-      - ./timescale-data:/var/lib/postgresql/data
-
   db-gateway:
     build: ./db-gateway
     container_name: db-gateway
@@ -130,19 +109,18 @@ services:
       - timescaledb
 
   redpanda:
-    image: redpandadata/console:latest   # multi-arch, good on Pi
+    image: redpandadata/console:latest
     container_name: redpanda
     restart: unless-stopped
     ports:
-      - "8094:8080"                      # UI at http://<pi-ip>:8084
+      - "8094:8080"
     environment:
-      KAFKA_BROKERS: "kafka:9092"        # your Kafka service name:port on the Docker network
+      KAFKA_BROKERS: "kafka:9092"
       KAFKA_TLS_ENABLED: "false"
       KAFKA_SASL_ENABLED: "false"
-      CONNECT_ENABLED: "true"            # optional: show Kafka Connect
+      CONNECT_ENABLED: "true"
       CONNECT_CLUSTERS_0_NAME: "connect"
       CONNECT_CLUSTERS_0_ADDRESS: "http://connect:8083"
     depends_on:
       - kafka
       - connect
-
