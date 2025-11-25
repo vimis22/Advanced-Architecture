@@ -1,35 +1,53 @@
+// Machines/Cover.cs
 using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using BookScheduler_MQTT.Services;
+using BookScheduler_MQTT.Models;
 
-public class Cover : BaseMachine
+namespace BookScheduler_MQTT.Machines
 {
-    public Cover(Guid id, string name, MqttClientService mqtt, DbHelper db) : base(id, name, "cover", mqtt, db) { }
-
-    public override async Task HandleCommandsAsync()
+    public class Cover : BaseMachine
     {
-        await Mqtt.SubscribeAsync($"machines/{Id}/commands", async payload =>
+        public Cover(Guid id, string name, MqttClientService mqtt, DbHelper db)
+            : base(id, name ?? string.Empty, "cover", mqtt, db)
+        { }
+
+        public override async Task HandleCommandAsync(string payload)
         {
-            dynamic cmd = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-            if ((string)cmd?.cmd == "start")
+            if (string.IsNullOrWhiteSpace(payload)) return;
+            JObject? j;
+            try { j = JObject.Parse(payload); } catch { return; }
+            var job = j["job"];
+            if (job == null) return;
+            var idStr = (string?)job["id"];
+            if (!Guid.TryParse(idStr, out var bookId)) return;
+
+            Console.WriteLine($"{Name}: creating covers for book {bookId}");
+
+            await SetBusyAsync(true);
+            await PublishStatusAsync("running");
+            await _db.InsertJobEventAsync(null, Id, "cover_started", new { bookId });
+
+            // simulate cover creation progress
+            for (int p = 10; p <= 100; p += 10)
             {
-                Guid bookId = Guid.Parse((string)cmd.book.id);
-                int copies = (int)cmd.book.copies;
-                await Db.SetMachineBusyAsync(Id, true);
-                await DoCoversAsync(bookId, copies);
+                await Task.Delay(800);
+                await PublishProgressAsync(bookId, "cover", p);
+                await _db.UpdateStageProgressAsync(await GetStageId(bookId, "cover"), p);
             }
-        });
-    }
 
-    private async Task DoCoversAsync(Guid bookId, int copies)
-    {
-        int done = 0;
-        while (done < copies)
+            await PublishDoneAsync(bookId, "cover");
+            await _db.UpdateStageProgressAsync(await GetStageId(bookId, "cover"), 100, "done");
+            await _db.InsertJobEventAsync(null, Id, "cover_done", new { bookId });
+            await SetBusyAsync(false);
+            await PublishStatusAsync("idle");
+        }
+
+        private async Task<Guid?> GetStageId(Guid bookId, string stage)
         {
-            await Task.Delay(700); // simulate time to create one cover
-            done++;
-            var percent = (int)Math.Floor(100.0 * done / copies);
-            await PublishProgressAsync(bookId, "cover", percent, new { coversMade = done, totalCovers = copies });
+            var s = await _db.GetBookStageAsync(bookId, stage);
+            return s?.Id;
         }
     }
 }

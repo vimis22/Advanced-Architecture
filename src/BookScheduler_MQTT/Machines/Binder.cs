@@ -1,43 +1,58 @@
+// Machines/Binder.cs
 using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using BookScheduler_MQTT.Services;
+using BookScheduler_MQTT.Models;
 
-public class Binder : BaseMachine
+namespace BookScheduler_MQTT.Machines
 {
-    public Binder(Guid id, string name, MqttClientService mqtt, DbHelper db) : base(id, name, "binder", mqtt, db) { }
-
-    public override async Task HandleCommandsAsync()
+    public class Binder : BaseMachine
     {
-        await Mqtt.SubscribeAsync($"machines/{Id}/commands", async payload =>
+        public Binder(Guid id, string name, MqttClientService mqtt, DbHelper db)
+            : base(id, name ?? string.Empty, "binder", mqtt, db)
+        { }
+
+        public override async Task HandleCommandAsync(string payload)
         {
-            dynamic cmd = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-            if ((string)cmd?.cmd == "start")
+            // binder should receive { jobId: "<guid>" } or similar
+            if (string.IsNullOrWhiteSpace(payload)) return;
+            JObject j;
+            try { j = JObject.Parse(payload); }
+            catch { return; }
+
+            var jobIdStr = (string?)j["jobId"] ?? (string?)j["job"]?["id"];
+            if (!Guid.TryParse(jobIdStr, out var bookId))
             {
-                Guid bookId = Guid.Parse((string)cmd.jobId);
-                // optionally verify prerequisites
-                var printingStatus = await Db.GetStageStatusAsync(bookId, "printing");
-                var coverStatus = await Db.GetStageStatusAsync(bookId, "cover");
-                if (printingStatus != "done" || coverStatus != "done")
-                {
-                    // send an error or requeue
-                    await Mqtt.PublishAsync("scheduler/alerts", Newtonsoft.Json.JsonConvert.SerializeObject(new { level = "warning", message = "Binder received start before prerequisites done", bookId, printingStatus, coverStatus }));
-                    return;
-                }
-                await Db.SetMachineBusyAsync(Id, true);
-                await DoBindingAsync(bookId);
+                Console.WriteLine("Binder: invalid job id");
+                return;
             }
-        });
-    }
 
-    private async Task DoBindingAsync(Guid bookId)
-    {
-        int percent = 0;
-        while (percent < 100)
+            // binder can only bind when both printing and cover are done - but MachineManager enforces assignment
+            Console.WriteLine($"{Name}: binding book {bookId}");
+
+            await SetBusyAsync(true);
+            await PublishStatusAsync("running");
+            await _db.InsertJobEventAsync(null, Id, "bind_started", new { bookId });
+
+            for (int p = 25; p <= 100; p += 25)
+            {
+                await Task.Delay(900);
+                await PublishProgressAsync(bookId, "binding", p);
+                await _db.UpdateStageProgressAsync(await GetStageId(bookId, "binding"), p);
+            }
+
+            await PublishDoneAsync(bookId, "binding");
+            await _db.UpdateStageProgressAsync(await GetStageId(bookId, "binding"), 100, "done");
+            await _db.InsertJobEventAsync(null, Id, "bind_done", new { bookId });
+            await SetBusyAsync(false);
+            await PublishStatusAsync("idle");
+        }
+
+        private async Task<Guid?> GetStageId(Guid bookId, string stage)
         {
-            await Task.Delay(1000);
-            percent += 20; // simulate binding chunks
-            if (percent > 100) percent = 100;
-            await PublishProgressAsync(bookId, "binding", percent, new { step = percent });
+            var s = await _db.GetBookStageAsync(bookId, stage);
+            return s?.Id;
         }
     }
 }
