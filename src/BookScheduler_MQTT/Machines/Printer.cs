@@ -1,50 +1,78 @@
+// Machines/Printer.cs
 using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using BookScheduler_MQTT.Services;
+using BookScheduler_MQTT.Models;
 
-public class Printer : BaseMachine
+namespace BookScheduler_MQTT.Machines
 {
-    public int PagesPerMinute { get; }
-
-    public Printer(Guid id, string name, int ppm, MqttClientService mqtt, DbHelper db) : base(id, name, "printer", mqtt, db)
+    public class Printer : BaseMachine
     {
-        PagesPerMinute = ppm;
-    }
+        public int PagesPerMin { get; }
 
-    // listens for commands for this machine
-    public override async Task HandleCommandsAsync()
-    {
-        await Mqtt.SubscribeAsync($"machines/{Id}/commands", async payload =>
+        public Printer(Guid id, string name, int pagesPerMin, MqttClientService mqtt, DbHelper db)
+            : base(id, name ?? string.Empty, "printer", mqtt, db)
         {
-            dynamic cmd = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-            string command = cmd?.cmd;
-            if (command == "start")
+            PagesPerMin = pagesPerMin > 0 ? pagesPerMin : 200;
+        }
+
+        public override async Task HandleCommandAsync(string payload)
+        {
+            // Expect payload with job: { job: { id, pages, copies } }
+            if (string.IsNullOrWhiteSpace(payload)) return;
+
+            JObject? j;
+            try { j = JObject.Parse(payload); }
+            catch
             {
-                // job contains bookId and other fields
-                Guid bookId = Guid.Parse((string)cmd.job.id);
-                int bookPages = (int)cmd.job.pages;
-                int copies = (int)cmd.job.copies;
-                // compute total pages = pages * copies
-                int totalPages = bookPages * copies;
-                await Db.SetMachineBusyAsync(Id, true);
-                await PrintAsync(bookId, totalPages);
+                Console.WriteLine("Printer: invalid command payload");
+                return;
             }
-        });
-    }
 
-    // Simulate printing: produce progress updates until finish
-    public async Task PrintAsync(Guid bookId, int totalPages)
-    {
-        int printed = 0;
-        // We'll simulate printing in chunks; chunk per second is approx pagesPerMinute/60
-        int chunk = Math.Max(1, PagesPerMinute / 60);
-        while (printed < totalPages)
+            var job = j["job"];
+            if (job == null) return;
+
+            var idStr = (string?)job["id"];
+            var pagesToken = job["pages"];
+            var copiesToken = job["copies"];
+
+            if (!Guid.TryParse(idStr, out var bookId)) return;
+            if (!int.TryParse(pagesToken?.ToString() ?? "0", out var pages)) pages = 0;
+            if (!int.TryParse(copiesToken?.ToString() ?? "1", out var copies)) copies = 1;
+
+            var totalPages = pages * copies;
+            if (totalPages <= 0) totalPages = pages > 0 ? pages : 1;
+
+            Console.WriteLine($"{Name}: starting print job for book {bookId}, {copies}x{pages} pages -> total {totalPages}");
+
+            await SetBusyAsync(true);
+            await PublishStatusAsync("running");
+            await _db.InsertJobEventAsync(null, Id, "print_started", new { bookId, copies, pages });
+
+            // Simple simulation: report progress every chunk
+            var pagesPerTick = Math.Max(1, PagesPerMin / 6); // tick ~10s -> 6 ticks/min
+            var printed = 0;
+            while (printed < totalPages)
+            {
+                await Task.Delay(1000); // simulate work faster for testing (1s per tick)
+                printed += pagesPerTick;
+                var progress = Math.Min(100, (int)((printed / (double)totalPages) * 100));
+                await PublishProgressAsync(bookId, "printing", progress);
+                await _db.UpdateStageProgressAsync(await GetStageId(bookId, "printing"), progress);
+            }
+
+            await PublishDoneAsync(bookId, "printing");
+            await _db.UpdateStageProgressAsync(await GetStageId(bookId, "printing"), 100, "done");
+            await _db.InsertJobEventAsync(null, Id, "print_done", new { bookId });
+            await SetBusyAsync(false);
+            await PublishStatusAsync("idle");
+        }
+
+        private async Task<Guid?> GetStageId(Guid bookId, string stage)
         {
-            await Task.Delay(1000); // one second per loop
-            printed += chunk;
-            if (printed > totalPages) printed = totalPages;
-            var percent = (int)Math.Floor(100.0 * printed / totalPages);
-            await PublishProgressAsync(bookId, "printing", percent, new { pagesPrinted = printed, pagesTotal = totalPages });
+            var s = await _db.GetBookStageAsync(bookId, stage);
+            return s?.Id;
         }
     }
 }

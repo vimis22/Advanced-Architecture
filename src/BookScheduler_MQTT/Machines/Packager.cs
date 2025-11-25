@@ -1,41 +1,55 @@
+// Machines/Packager.cs
 using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using BookScheduler_MQTT.Services;
+using BookScheduler_MQTT.Models;
 
-public class Packager : BaseMachine
+namespace BookScheduler_MQTT.Machines
 {
-    public Packager(Guid id, string name, MqttClientService mqtt, DbHelper db) : base(id, name, "packager", mqtt, db) { }
-
-    public override async Task HandleCommandsAsync()
+    public class Packager : BaseMachine
     {
-        await Mqtt.SubscribeAsync($"machines/{Id}/commands", async payload =>
+        public Packager(Guid id, string name, MqttClientService mqtt, DbHelper db)
+            : base(id, name ?? string.Empty, "packager", mqtt, db)
+        { }
+
+        public override async Task HandleCommandAsync(string payload)
         {
-            dynamic cmd = Newtonsoft.Json.JsonConvert.DeserializeObject(payload);
-            if ((string)cmd?.cmd == "start")
+            if (string.IsNullOrWhiteSpace(payload)) return;
+            JObject j;
+            try { j = JObject.Parse(payload); } catch { return; }
+
+            var jobIdStr = (string?)j["jobId"] ?? (string?)j["job"]?["id"];
+            if (!Guid.TryParse(jobIdStr, out var bookId))
             {
-                Guid bookId = Guid.Parse((string)cmd.jobId);
-                // verify binding is done
-                var bindingStatus = await Db.GetStageStatusAsync(bookId, "binding");
-                if (bindingStatus != "done")
-                {
-                    await Mqtt.PublishAsync("scheduler/alerts", Newtonsoft.Json.JsonConvert.SerializeObject(new { level = "warning", message = "Packager start before binding done", bookId }));
-                    return;
-                }
-                await Db.SetMachineBusyAsync(Id, true);
-                await DoPackagingAsync(bookId);
+                Console.WriteLine("Packager: invalid job id");
+                return;
             }
-        });
-    }
 
-    private async Task DoPackagingAsync(Guid bookId)
-    {
-        int percent = 0;
-        while (percent < 100)
+            Console.WriteLine($"{Name}: packaging book {bookId}");
+
+            await SetBusyAsync(true);
+            await PublishStatusAsync("running");
+            await _db.InsertJobEventAsync(null, Id, "package_started", new { bookId });
+
+            for (int p = 20; p <= 100; p += 20)
+            {
+                await Task.Delay(700);
+                await PublishProgressAsync(bookId, "packaging", p);
+                await _db.UpdateStageProgressAsync(await GetStageId(bookId, "packaging"), p);
+            }
+
+            await PublishDoneAsync(bookId, "packaging");
+            await _db.UpdateStageProgressAsync(await GetStageId(bookId, "packaging"), 100, "done");
+            await _db.InsertJobEventAsync(null, Id, "package_done", new { bookId });
+            await SetBusyAsync(false);
+            await PublishStatusAsync("idle");
+        }
+
+        private async Task<Guid?> GetStageId(Guid bookId, string stage)
         {
-            await Task.Delay(800);
-            percent += 25;
-            if (percent > 100) percent = 100;
-            await PublishProgressAsync(bookId, "packaging", percent, new { stage = percent });
+            var s = await _db.GetBookStageAsync(bookId, stage);
+            return s?.Id;
         }
     }
 }
