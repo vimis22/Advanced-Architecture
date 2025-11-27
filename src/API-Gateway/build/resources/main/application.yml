@@ -25,17 +25,33 @@ spring:
           max-connections: 200
           acquire-timeout: 500
       routes:
+        # Test route for rate limiting (local testing)
+        - id: test-rate-limit
+          uri: http://localhost:8080
+          predicates:
+            - Path=/test/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+            - name: RewritePath
+              args:
+                regexp: /test/(?<segment>.*)
+                replacement: /fallback/${segment}
+
         # Route to Orchestrator
         - id: orchestrator-service
-          uri: ${ORCHESTRATOR_URI:http://orchestrator:8082}
+          uri: ${ORCHESTRATOR_URI:http://localhost:8082}
           predicates:
             - Path=/api/v1/orchestrator/**
           filters:
-#            - name: RequestRateLimiter
-#              args:
-#                key-resolver: "#{@ipKeyResolver}"
-#                redis-rate-limiter.replenishRate: 10
-#                redis-rate-limiter.burstCapacity: 20
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
             - name: CircuitBreaker
               args:
                 name: orchestratorCircuitBreaker
@@ -55,6 +71,13 @@ resilience4j:
         minimumNumberOfCalls: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway.filter.ratelimit: TRACE
+    org.springframework.data.redis: DEBUG
+    io.lettuce: DEBUG
 
 
 

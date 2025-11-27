@@ -68,4 +68,15 @@ public class FallbackController {
         );
         return new ResponseEntity<>(body, HttpStatus.SERVICE_UNAVAILABLE);
     }
+
+    @RequestMapping(path = "/test", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> testEndpoint(ServerHttpRequest request) {
+        Map<String, Object> body = Map.of(
+                "status", "ok",
+                "message", "Rate limiting test endpoint",
+                "path", request.getPath().value(),
+                "timestamp", Instant.now().toString()
+        );
+        return ResponseEntity.ok(body);
+    }
 }

@@ -113,12 +113,12 @@ services:
       DB_PASSWORD: postgres
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SERVER_PORT: 8082
-    expose:
-      - "8082"
+    ports:
+      - "8082:8082"
     networks:
       - advanced-architecture-network
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8082/actuator/health"]
+      test: ["CMD-SHELL", "nc -z localhost 8082 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
