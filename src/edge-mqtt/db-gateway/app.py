@@ -9,8 +9,9 @@ app = FastAPI(title="DB Gateway", version="1.1")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://192.168.0.68:8081",
-        "http://192.168.1.68:8081",
+        #"http://192.168.0.68:8081",
+        #"http://192.168.1.68:8081",
+        "http://10.126.128.148:8081",
         "http://localhost:8081",
         "*",  # dev-friendly; tighten later
     ],

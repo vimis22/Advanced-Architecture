@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using BookScheduler_MQTT.Services;
+using BookScheduler_MQTT.Machines;
+using BookScheduler_MQTT.Models;
 using BookScheduler_MQTT;
 
 namespace BookScheduler_MQTT

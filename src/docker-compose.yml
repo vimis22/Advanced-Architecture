@@ -1,8 +1,13 @@
-version: "3.8"
+version: "3.9"
+
 services:
+  # -------------------------
+  # PostgreSQL
+  # -------------------------
   postgres:
     image: postgres:15
-    restart: unless-stopped
+    container_name: bookscheduler_postgres
+    restart: always
     environment:
       POSTGRES_DB: bookscheduler
       POSTGRES_USER: buser
@@ -11,15 +16,41 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d:ro
 
-  mosquitto:
-    image: eclipse-mosquitto:2.0
+  # -------------------------
+  # Eclipse Mosquitto (MQTT)
+  # -------------------------
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: bookscheduler_mqtt
+    restart: always
     ports:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ./mosquitto/config:/mosquitto/config:ro
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
 
+  # -------------------------
+  # BookScheduler App
+  # -------------------------
+  scheduler:
+    build:
+      context: bookscheduler_mqtt
+      dockerfile: Dockerfile
+    container_name: book_scheduler
+    restart: always
+    depends_on:
+      - postgres
+      - mqtt
+    environment:
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=bookscheduler;Username=buser;Password=bpass"
+      Mqtt__Host: mqtt
+      Mqtt__Port: 1883
+    ports:
+      - "5000:5000"
+
+# -------------------------
+# DEFINE VOLUMES
+# -------------------------
 volumes:
   pgdata:

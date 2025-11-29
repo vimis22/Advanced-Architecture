@@ -1,13 +1,16 @@
+// Models/MachineDto.cs
 using System;
 
-public class MachineDto
+namespace BookScheduler_MQTT.Models
 {
-    public Guid Id { get; set; }
-    public string? Name { get; set; }
-    public string? Type { get; set; }
-    public int? PagesPerMin { get; set; }
-    public bool IsUp { get; set; }
-    public bool IsBusy { get; set; }
-    public DateTime? LastSeen { get; set; }
-    public string? Metadata { get; set; } // JSON string or null
+    public class MachineDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public int? PagesPerMin { get; set; }
+        public string Status { get; set; } = "off";
+        public DateTime? LastSeen { get; set; }
+        public string Metadata { get; set; } = "{}";
+    }
 }
