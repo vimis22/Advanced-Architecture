@@ -202,4 +202,20 @@ public class TimescaleDBService
 
         return await conn.QueryFirstOrDefaultAsync<RecoverySummary>(sql) ?? new RecoverySummary();
     }
+
+    public async Task<RecoverySummary> GetOrderRequeueStatsAsync(int orderId)
+    {
+        using var conn = GetConnection();
+        var sql = @"
+            SELECT
+                COUNT(*) as TotalRecoveries,
+                AVG(recovery_duration_ms) as AvgRecoveryMs,
+                MIN(recovery_duration_ms) as MinRecoveryMs,
+                MAX(recovery_duration_ms) as MaxRecoveryMs,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY recovery_duration_ms) as MedianRecoveryMs
+            FROM requeue_events
+            WHERE order_id = @OrderId";
+
+        return await conn.QueryFirstOrDefaultAsync<RecoverySummary>(sql, new { OrderId = orderId }) ?? new RecoverySummary();
+    }
 }

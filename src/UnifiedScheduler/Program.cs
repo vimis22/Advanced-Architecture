@@ -132,7 +132,7 @@ class Program
                 switch (command)
                 {
                     case "order":
-                        await CreateTestOrderAsync(orderManager);
+                        //await CreateTestOrderAsync(orderManager);
                         break;
 
                     case "status":

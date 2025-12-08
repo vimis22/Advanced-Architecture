@@ -183,6 +183,15 @@ els.connect.onclick = () => {
           clog('ok', 'Subscribed to scheduler/queue/status');
         }
       });
+
+      // Subscribe to order completion notifications
+      client.subscribe('scheduler/order/completed', { qos: 1 }, (err) => {
+        if (err) {
+          clog('err', 'Failed to subscribe to order completed');
+        } else {
+          clog('ok', 'Subscribed to scheduler/order/completed');
+        }
+      });
     });
 
     client.on('reconnect', () => {
@@ -209,13 +218,13 @@ els.connect.onclick = () => {
 
           // Check for job completion
           if (data.progress === 100 && data.status === 'running') {
-            clog('ok', `✓ Job completed on ${data.machine_id}: unit ${data.current_unit_id}`);
+            //clog('ok', `✓ Job completed on ${data.machine_id}: unit ${data.current_unit_id}`);
           }
 
           // Check for machine going offline
           const machine = MACHINES.get(data.machine_id);
           if (machine && data.status === 'off') {
-            clog('warn', `⚠ Machine ${data.machine_id} went offline`);
+            //clog('warn', `⚠ Machine ${data.machine_id} went offline`);
           }
         } else if (topic === 'scheduler/queue/status') {
           // Update queue status display
@@ -223,6 +232,9 @@ els.connect.onclick = () => {
           els.queueB.textContent = data.job_b || 0;
           els.queueC.textContent = data.job_c || 0;
           els.queueD.textContent = data.job_d || 0;
+        } else if (topic === 'scheduler/order/completed') {
+          // Display order completion statistics
+          clog('ok', data.message);
         }
       } catch (err) {
         console.error('Error processing message:', err);
@@ -291,9 +303,9 @@ setInterval(() => {
     if (timeSinceHeartbeat > OFFLINE_AFTER_MS && timeSinceHeartbeat < OFFLINE_AFTER_MS + 1000) {
       // Only alert once (within 1 second window after timeout)
       if (machine.status !== 'off') {
-        clog('err', `🔴 MACHINE FAILURE: ${machineId} (Type ${machine.type}) - No heartbeat for ${(timeSinceHeartbeat / 1000).toFixed(1)}s`);
+        //clog('err', `🔴 MACHINE FAILURE: ${machineId} (Type ${machine.type}) - No heartbeat for ${(timeSinceHeartbeat / 1000).toFixed(1)}s`);
         if (machine.unitId) {
-          clog('warn', `   Unit ${machine.unitId} will be re-queued by scheduler`);
+          //clog('warn', `   Unit ${machine.unitId} will be re-queued by scheduler`);
         }
       }
     }

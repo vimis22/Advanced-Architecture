@@ -73,7 +73,7 @@ services:
     networks:
       - scheduler-network
     deploy:
-      replicas: 5  
+      replicas: 6  
       restart_policy:
         condition: on-failure
         delay: 30s  
@@ -139,7 +139,7 @@ services:
     networks:
       - scheduler-network
     deploy:
-      replicas: 2  
+      replicas: 3  
       restart_policy:
         condition: on-failure
         delay: 30s  

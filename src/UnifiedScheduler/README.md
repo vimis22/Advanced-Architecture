@@ -87,7 +87,7 @@ The scheduler provides an interactive console:
 ```
 > order
   Title: The Art of Scheduling
-  Author: Claude AI
+  Author: Anders Risager
   Pages: 200
   Cover Type: hardcover
   Paper Type: glossy

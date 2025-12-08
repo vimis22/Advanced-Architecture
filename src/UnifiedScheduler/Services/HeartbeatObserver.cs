@@ -261,7 +261,74 @@ public class HeartbeatObserver
                     // Cleanup: Remove the completed units counter from Redis (full cleanup)
                     await _redis.DeleteOrderTrackingAsync(orderId);
 
-                    Console.WriteLine($"[HeartbeatObserver] ★ Order {orderId} FULLY COMPLETED ({completedCount}/{order.Quantity} units) - Redis cleaned up");
+                    // Small delay to ensure database commit completes
+                    await Task.Delay(100);
+
+                    // Get updated order info with completion time
+                    var completedOrder = await _timescale.GetOrderAsync(orderId);
+
+                    // Get requeue statistics for this order
+                    var requeueStats = await _timescale.GetOrderRequeueStatsAsync(orderId);
+
+                    // Prepare statistics message
+                    string statsMessage;
+                    if (completedOrder?.StartedAt != null && completedOrder?.CompletedAt != null)
+                    {
+                        var startTime = completedOrder.StartedAt.Value.ToLocalTime();
+                        var endTime = completedOrder.CompletedAt.Value.ToLocalTime();
+                        var duration = endTime - startTime;
+
+                        if (requeueStats.TotalRecoveries > 0)
+                        {
+                            statsMessage = $"★ ORDER {orderId} COMPLETED ★ | {order.Title} | " +
+                                         $"{completedCount}/{order.Quantity} units | " +
+                                         $"Duration: {duration.TotalMinutes:F2} min ({duration.TotalSeconds:F1}s) | " +
+                                         $"Requeues: {requeueStats.TotalRecoveries} | " +
+                                         $"Avg Recovery: {requeueStats.AvgRecoveryMs:F1}ms | " +
+                                         $"Start: {startTime:HH:mm:ss} | End: {endTime:HH:mm:ss}";
+                        }
+                        else
+                        {
+                            statsMessage = $"★ ORDER {orderId} COMPLETED ★ | {order.Title} | " +
+                                         $"{completedCount}/{order.Quantity} units | " +
+                                         $"Duration: {duration.TotalMinutes:F2} min ({duration.TotalSeconds:F1}s) | " +
+                                         $"No failures - completed without requeues! | " +
+                                         $"Start: {startTime:HH:mm:ss} | End: {endTime:HH:mm:ss}";
+                        }
+                    }
+                    else
+                    {
+                        statsMessage = $"★ ORDER {orderId} COMPLETED ★ | {order.Title} | {completedCount}/{order.Quantity} units";
+                    }
+
+                    // Publish to MQTT dashboard
+                    var completionPayload = new
+                    {
+                        order_id = orderId,
+                        title = order.Title,
+                        units = completedCount,
+                        total = order.Quantity,
+                        duration_minutes = completedOrder?.StartedAt != null && completedOrder?.CompletedAt != null
+                            ? (completedOrder.CompletedAt.Value - completedOrder.StartedAt.Value).TotalMinutes
+                            : 0,
+                        requeues = requeueStats.TotalRecoveries,
+                        avg_recovery_ms = requeueStats.AvgRecoveryMs,
+                        message = statsMessage
+                    };
+
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(completionPayload);
+                    var mqttMessage = new MQTTnet.MqttApplicationMessageBuilder()
+                        .WithTopic("scheduler/order/completed")
+                        .WithPayload(json)
+                        .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+                        .Build();
+
+                    await _mqttClient.PublishAsync(mqttMessage);
+
+                    // Also log to console
+                    Console.WriteLine($"\n{'=',60}");
+                    Console.WriteLine(statsMessage);
+                    Console.WriteLine($"{'=',60}\n");
                 }
                 else
                 {
