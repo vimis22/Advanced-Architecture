@@ -73,10 +73,10 @@ services:
     networks:
       - scheduler-network
     deploy:
-      replicas: 6  
+      replicas: 6
       restart_policy:
         condition: on-failure
-        delay: 30s  
+        delay: 30s
 
   # Machine B (Cover) - Scalable
   machine-b:
@@ -95,10 +95,10 @@ services:
     networks:
       - scheduler-network
     deploy:
-      replicas: 3  
+      replicas: 3
       restart_policy:
         condition: on-failure
-        delay: 30s  
+        delay: 30s
 
   # Machine C (Binding) - Scalable
   machine-c:
@@ -117,10 +117,10 @@ services:
     networks:
       - scheduler-network
     deploy:
-      replicas: 3 
+      replicas: 3
       restart_policy:
         condition: on-failure
-        delay: 30s  
+        delay: 30s
 
   # Machine D (Packaging) - Scalable
   machine-d:
@@ -139,7 +139,7 @@ services:
     networks:
       - scheduler-network
     deploy:
-      replicas: 3  
+      replicas: 3
       restart_policy:
         condition: on-failure
         delay: 30s  

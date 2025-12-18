@@ -44,7 +44,7 @@ async function renderDevices() {
     const { lastSeen, count, status } = DEVICES.get(id);
     const online = (now - lastSeen) <= OFFLINE_AFTER_MS;
 
-    if (!online && status == "running" && id[0] === 'A') {
+    if (!online) {
       if (rerouting) return;
       rerouting = true;
       await Reroute(null, id);
@@ -137,7 +137,8 @@ els.connect.onclick = () => {
       client.subscribe('ack', { qos: 1 });
       client.subscribe('progress', { qos: 1 });
       client.subscribe('alert', { qos: 1 });
-      clog('ok', 'Subscribed to cmd, hb, work, ack, progress, alert');
+      client.subscribe('scheduler/order/completed', { qos: 1 });
+      clog('ok', 'Subscribed to cmd, hb, work, ack, progress, alert, scheduler/order/completed');
       // and telemetry if set
       const topic = els.autoTopic.value.trim();
       if (topic) { client.subscribe(topic, { qos: 1 }); clog('ok', `Subscribed to ${topic}`); }
@@ -150,6 +151,7 @@ els.connect.onclick = () => {
     client.on('message', async (topic, message) => {
       const hb = topic.match(/hb/);
       const alert = topic.match(/alert/);
+      const orderCompleted = topic === 'scheduler/order/completed';
 
       m = ParseMessage(message)
 
@@ -177,6 +179,9 @@ els.connect.onclick = () => {
       }
       else if (alert) {
         Reroute(m.from, m.next_machine);
+      }
+      else if (orderCompleted) {
+        clog('ok', m.message);
       }
       else {
         //clog('ok', `Topic = ${topic}, message = ${message}`);

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BookScheduler")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b8a581794b5a7ec7498e94de39f434dae8c9f7bc")]
 [assembly: System.Reflection.AssemblyProductAttribute("BookScheduler")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BookScheduler")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

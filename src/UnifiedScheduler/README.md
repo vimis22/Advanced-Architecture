@@ -70,50 +70,35 @@ Unit complete → Order complete when all units done
 1. **Start all services:**
 ```bash
 cd src/UnifiedScheduler
-docker-compose up --build
+docker-compose up -d
 ```
 
 This starts:
 - MQTT Broker (port 1883)
 - Redis (port 6379)
 - TimescaleDB (port 5432)
-- Unified Scheduler
+- Unified Scheduler with Web Dashboard (port 8080)
 - 4 Machine Simulators (A, B, C, D)
 
-2. **Interact with the scheduler:**
+2. **Access the Web Dashboard:**
 
-The scheduler provides an interactive console:
-
+Open your browser and navigate to:
 ```
-> order
-  Title: The Art of Scheduling
-  Author: Anders Risager
-  Pages: 200
-  Cover Type: hardcover
-  Paper Type: glossy
-  Quantity: 10
-✓ Order created: <order-id>
-
-> status <order-id>
-=== Order Status: The Art of Scheduling ===
-  Order ID: <order-id>
-  Status: processing
-  Completed Units: 5/10
-  In Progress: A=2, B=2, C=1, D=0
-
-> queues
-[JobQueueManager] Queue Status: A=3, B=3, C=2, D=5
-
-> machines
-=== Machine Status ===
-  A-machine-001 (Type A): running
-    Current Unit: unit-42
-    Progress: 75
-    Last Heartbeat: 0.5s ago
-  ...
-
-> exit
+http://localhost:8080
 ```
+
+From the web dashboard you can:
+- **Create new orders** - Specify title, author, pages, cover type, paper type, and quantity
+- **Monitor the scheduler in real-time** - Watch jobs being assigned to machines
+- **Track order progress** - See which units are in progress and completed
+- **View completion status** - Know when your order is complete
+- **Analyze statistics** - View processing times and requeue events for each order
+
+The dashboard provides a live view of:
+- Active machines and their current status
+- Job queue lengths for each stage (A, B, C, D)
+- Order progress with unit-by-unit tracking
+- Historical statistics including total processing time and requeue counts
 
 ### Run Locally (Development)
 

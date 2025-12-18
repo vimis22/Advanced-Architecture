@@ -122,7 +122,7 @@ def worker_thread(client: mqtt.Client, stop_evt: threading.Event):
         time.sleep(sleep_ms / 1000.0)
 
         # Increment progress
-        current_progress += random.randint(1, 5)
+        current_progress += random.randint(19, 21)
 
         if current_progress >= 100:
             current_progress = 100

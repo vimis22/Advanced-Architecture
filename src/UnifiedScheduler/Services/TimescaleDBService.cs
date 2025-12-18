@@ -45,7 +45,21 @@ public class TimescaleDBService
     public async Task<Order?> GetOrderAsync(int orderId)
     {
         using var conn = GetConnection();
-        var sql = "SELECT * FROM orders WHERE id = @OrderId";
+        var sql = @"
+            SELECT
+                id as Id,
+                title as Title,
+                author as Author,
+                pages as Pages,
+                cover_type as CoverType,
+                paper_type as PaperType,
+                quantity as Quantity,
+                status as Status,
+                created_at as CreatedAt,
+                started_at as StartedAt,
+                completed_at as CompletedAt
+            FROM orders
+            WHERE id = @OrderId";
         return await conn.QueryFirstOrDefaultAsync<Order>(sql, new { OrderId = orderId });
     }
 
