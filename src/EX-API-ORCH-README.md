@@ -1,30 +1,24 @@
-# 🚀 Hurtig Start Guide - External-Service, API-Gateway og Orchestrator
+# Readme for External-Service, API-Gateway & Orchestrator Part Together
+The purpose with this readme is to guide the user on how to run the services of External-Service, API-Gateway and Orchestrator, where are able to create an order from the browser as a customer and thereafter send it through the API-Gateway to the Orchestrator and then get a response back with an orderId.
 
-Denne guide hjælper dig med at køre External-Service, API-Gateway og Orchestrator, så du kan se UI'en og få orderId tilbage.
+# Prerequisites
+In order to execute these specific services, we require you to have prehandedly installed the following:
+- Docker Desktop
+- Git Installed
 
-## Forudsætninger
-
-- Docker Desktop installeret og kørende
-- Git installeret
-
-## Trin 1: Klon projektet (hvis ikke allerede gjort)
-
-```bash
-git clone <repository-url>
-cd Advanced-Architecture
-```
-
-## Trin 2: Start alle services
-
+## Step 1: Clone the Project if not done!
+Please go to our Github Repository and clone the HTTP-URL:
+```` bash
+https://github.com/vimis22/Advanced-Architecture.git
+````
+## Step 2: Start all the services
 ```bash
 # Start ALLE services med Docker Compose
 docker-compose up -d
 ```
 
-### Alternativ: Start trin-for-trin
-
-Hvis der er problemer med at starte alt på én gang, så kør følgende:
-
+### Alternative: Start step-by-step
+If you have any issues with the docker-compose up command, please execute the following:
 ```bash
 # Trin 2a: Start infrastruktur services først
 docker-compose up -d postgres redis zookeeper kafka mosquitto
@@ -32,37 +26,27 @@ docker-compose up -d postgres redis zookeeper kafka mosquitto
 # Trin 2b: Vent 30 sekunder og start derefter applikations-services
 docker-compose up -d orchestrator api-gateway external-service
 ```
-
-## Trin 3: Verificer at services kører
-
+## Step 3: Verify that the Services work
 ```bash
 # Tjek status på alle containers
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
-
-Du skal se følgende services som **Up** og **healthy**:
+This command helps in identifying if the following services are working and healthy:
 
 - `external-service` - Port 5173:80
 - `api-gateway` - Port 8080:8080 (healthy)
 - `orchestrator` - Port 8082:8082 (healthy)
 - `postgres`, `redis`, `kafka`, `zookeeper`, `mosquitto`
 
-## Trin 4: Test systemet
-
-### Åbn UI'en i browseren
-
+## Step 4:
+When the previous commands are done, and the docker containerization is up running. Please open the UI in the browser:
 ```
 http://localhost:5173
 ```
-
-### Udfyld formularen
-
-1. Indtast bogdetaljer (titel, forfatter, antal sider, antal, cover type, side type)
-2. Klik på **Submit**-knappen
-3. Du skulle nu modtage et orderId tilbage!
-
-**Forventet output:**
-
+You need to do the following steps:
+- Create an order
+- Send the order to the orchestrator, by clicking the "Submit" button.
+- Get the response from the orchestrator
 ```json
 {
   "orderId": 1,
@@ -71,56 +55,49 @@ http://localhost:5173
 }
 ```
 
-### Test med curl (valgfrit)
-
+It is also possible to send an order with the curl-command:
 ```bash
 curl -X POST http://localhost:8080/api/v1/orchestrator/orders \
   -H "Content-Type: application/json" \
   -d "{\"title\":\"Test Book\",\"author\":\"Test Author\",\"pages\":100,\"quantity\":10,\"coverType\":\"HARDCOVER\",\"pageType\":\"GLOSSY\"}"
 ```
 
-## Trin 5: Stop alle services (når du er færdig)
-
+## Step 5: Stop all services, when done working!
 ```bash
-# Stop alle services
+# Stop all services
 docker-compose down
 
-# Stop og slet volumes (genstart fra scratch)
+# Stop and delete all volumes and restart from scratch
 docker-compose down -v
 ```
 
-## Troubleshooting
-
-### Hvis du får 503 fejl
-
+## TroubleShooting:
+### In case you recieve an 503 error:
 ```bash
-# Tjek logs for at finde fejl
+# Check the logs and find the error
 docker logs api-gateway --tail 50
 docker logs orchestrator --tail 50
 docker logs external-service --tail 20
 
-# Genstart services
+# Restart all services
 docker-compose restart orchestrator api-gateway external-service
 ```
 
-### Hvis images mangler
-
+### If images are missing:
 ```bash
-# Træk præ-byggede images fra Docker Hub
+# Please pull the prebuilt images from Docker Hub
 docker pull vimis222/api-gateway:latest
 docker pull vimis222/orchestrator:latest
 docker pull vimis222/external-service:latest
 
-# Start derefter services igen
+# Then start all the services again.
 docker-compose up -d
 ```
 
-### Hvis Docker Compose tager for lang tid
+### What if docker compose is taking long time?
+Sometimes it can take a bit of time for the Orchestrator to be ready. Please wait 1-2 minutes after the `docker-compose up -d` has been executed, before you test the User Interface.
 
-Nogle gange kan det tage lidt tid for Orchestrator at blive klar. Vent 1-2 minutter efter `docker-compose up -d` før du tester UI'en.
-
-## Service Endpoints
-
+### Service Endpoints
 - **UI (External-Service):** http://localhost:5173
 - **API Gateway:** http://localhost:8080
 - **Orchestrator:** http://localhost:8082
@@ -128,8 +105,10 @@ Nogle gange kan det tage lidt tid for Orchestrator at blive klar. Vent 1-2 minut
 - **Redis:** localhost:6379
 - **Kafka:** localhost:9092
 
-## Arkitektur Oversigt
-
+### Architectural Overview:
+- External-Service: This is the service, where the submits an Production Order HTTP Request to the API-Gateway.
+- API-Gateway: This forwards the Request to the Orchestrator Service and logs the request/response.
+- Orchestrator: Validates the Request, Orchestrates the Domain logic to create an Production Order, through the Repository Port and publishes a domain event to Kafka (via the publisher post).
 ```
 ┌─────────────────────┐
 │  External-Service   │
@@ -164,16 +143,12 @@ Nogle gange kan det tage lidt tid for Orchestrator at blive klar. Vent 1-2 minut
 └─────────────────────┘
 ```
 
-## ⚡ TL;DR - Hurtigste metode
-
+## The fastest method in order to get started:
 ```bash
 cd Advanced-Architecture
 docker-compose up -d
 ```
 
-Vent 1-2 minutter, åbn derefter **http://localhost:5173** i browseren! 🎉
+Please wait 1-2 minutes after the `docker-compose up -d` has been executed.
+You should get this response in the console: **http://localhost:5173**, which leads to the External-Service Browser.
 
----
-
-**Lavet af:** Vivek
-**Dato:** 12. December 2025
