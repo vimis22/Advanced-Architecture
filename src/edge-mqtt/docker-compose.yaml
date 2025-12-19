@@ -10,7 +10,6 @@ services:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./mosquitto-data:/mosquitto/data
       - ./log:/mosquitto/log
-
   dashboard:
     image: nginx:1.27-alpine
     container_name: mqtt-dashboard
@@ -21,7 +20,6 @@ services:
       - "8081:80"
     volumes:
       - ./mqtt-dashboard:/usr/share/nginx/html:ro
-
   simulator-a:
     build: ./simulator
     image: edge-mqtt-simulator
@@ -33,7 +31,6 @@ services:
     depends_on: [mosquitto]
     restart: always
     command: sh -c "sleep 10 && python machine.py"
-
   simulator-b:
     image: edge-mqtt-simulator
     environment:
@@ -44,7 +41,6 @@ services:
     depends_on: [mosquitto]
     restart: always
     command: sh -c "sleep 10 && python machine.py"
-
   kafka:
     image: apache/kafka:3.8.0
     container_name: kafka
@@ -67,7 +63,6 @@ services:
       - "9092:9092"
     volumes:
       - ./kafka-data:/var/lib/kafka/data
-
   connect:
     image: debezium/connect:2.7.3.Final
     container_name: connect
@@ -85,10 +80,9 @@ services:
       - VALUE_CONVERTER_SCHEMAS_ENABLE=false
       - KAFKA_CONNECT_PLUGINS_DIR=/kafka/connect/plugins
     ports:
-      - "8083:8083"   
+      - "8083:8083"
     volumes:
       - ./connect:/kafka/connect
-
   timescaledb:
     image: timescale/timescaledb:2.23.0-pg16
     container_name: timescaledb
@@ -99,7 +93,6 @@ services:
       - POSTGRES_DB=grid
     ports:
       - "5433:5432"
-
   db-gateway:
     build: ./db-gateway
     container_name: db-gateway
@@ -114,18 +107,18 @@ services:
       - "8090:8090"
     depends_on:
       - timescaledb
-      
+
   redpanda:
-    image: redpandadata/console:latest 
+    image: redpandadata/console:latest
     container_name: redpanda
     restart: unless-stopped
     ports:
-      - "8094:8080"                    
+      - "8094:8080"
     environment:
-      KAFKA_BROKERS: "kafka:9092"        
+      KAFKA_BROKERS: "kafka:9092"
       KAFKA_TLS_ENABLED: "false"
       KAFKA_SASL_ENABLED: "false"
-      CONNECT_ENABLED: "true"            
+      CONNECT_ENABLED: "true"
       CONNECT_CLUSTERS_0_NAME: "connect"
       CONNECT_CLUSTERS_0_ADDRESS: "http://connect:8083"
     depends_on:

@@ -17,7 +17,15 @@
 - [Recommended VSCode Extension](#recommended-vscode-extension)
 
 ## Introduction
-This repository serves as a template for students of Advanced Software Engineering to structure their portfolio project.
+This repository implements a microservices-based book production system for Advanced Software Engineering portfolio project.
+
+### System Architecture
+The system consists of the following services:
+- **External-Service**: Frontend UI (React/Vite) - User interface for submitting production orders
+- **API-Gateway**: Spring Cloud Gateway - Entry point with rate limiting and circuit breakers
+- **Orchestrator**: Spring Boot service - Core business logic and domain orchestration
+- **BookScheduler**: C# MQTT service - Production scheduling system
+- **edge-mqtt**: Kafka Connect + MQTT infrastructure
 
 Below is the detailed overview of the repository structure:
 
@@ -69,8 +77,119 @@ This directory contains the latex source files essential for the group report an
 The directory latexUtils contains scripts for compiling LaTeX locally using docker, you do not need to change anything in these files, but you are welcome to do so if you want to.
 
 ### Src
-This folder is intended for organizing and storing all your source code. You decide on the structure but please keep everything source code related inside `./src`.
-You are allowed to have your DockerFiles at root level for build context reasons, as the example DockerFile provided.
+This folder contains all microservice source code:
+- `API-Gateway/` - Spring Cloud Gateway service
+- `Orchestrator/` - Core orchestration service
+- `External-Service/` - React/Vite frontend
+- `BookScheduler_MQTT/` - C# MQTT scheduler
+- `edge-mqtt/` - Kafka Connect infrastructure
+
+## Quick Start
+
+### Prerequisites
+- Docker and Docker Compose installed
+- Git
+- (Optional) Java 17+ for local development
+- (Optional) Node.js 18+ for frontend development
+- (Optional) .NET 7+ for scheduler development
+
+### Running the Entire System
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd Advanced-Architecture
+   ```
+
+2. **Start all services with Docker Compose**:
+   ```bash
+   docker compose up -d
+   ```
+
+   This will start:
+   - PostgreSQL (port 5432)
+   - Redis (port 6379)
+   - Kafka + Zookeeper (ports 9092, 29092)
+   - MQTT Broker (port 1883)
+   - Orchestrator (internal port 8082)
+   - API Gateway (port 8080)
+   - External Service UI (port 5173)
+   - Book Scheduler (internal)
+
+3. **Access the application**:
+   - Frontend UI: http://localhost:5173
+   - API Gateway: http://localhost:8080
+   - API Documentation: http://localhost:8080/actuator
+
+4. **View logs**:
+   ```bash
+   # All services
+   docker compose logs -f
+
+   # Specific service
+   docker compose logs -f api-gateway
+   ```
+
+5. **Stop all services**:
+   ```bash
+   docker compose down
+   ```
+
+6. **Clean up (remove volumes)**:
+   ```bash
+   docker compose down -v
+   ```
+
+### Development Mode
+
+#### API Gateway & Orchestrator (Local)
+```bash
+cd src/Orchestrator
+./gradlew bootRun
+
+cd src/API-Gateway
+./gradlew bootRun
+```
+
+#### External Service (Local)
+```bash
+cd src/External-Service
+npm install
+npm run dev
+```
+
+#### Book Scheduler (Local)
+```bash
+cd src/BookScheduler_MQTT
+dotnet run
+```
+
+### Testing the System
+
+1. **Submit a production order**:
+   ```bash
+   curl -X POST http://localhost:8080/api/v1/orchestrator/orders \
+     -H "Content-Type: application/json" \
+     -d '{
+       "title": "Test Book",
+       "author": "John Doe",
+       "pages": 300,
+       "coverType": "HARDCOVER",
+       "quantity": 100
+     }'
+   ```
+
+2. **Get order by ID**:
+   ```bash
+   curl http://localhost:8080/api/v1/orchestrator/orders/{orderId}
+   ```
+
+### Troubleshooting
+
+- **Port conflicts**: Ensure ports 5173, 8080, 5432, 6379, 9092, 1883 are available
+- **Docker issues**: Run `docker compose down -v` and restart
+- **Service health**: Check `docker compose ps` for service status
+- **Logs**: Use `docker compose logs <service-name>` for debugging
 
 ## Compiling Latex
 You can compile latex source files to PDF locally. Multiple options are available; choose the one you prefer.

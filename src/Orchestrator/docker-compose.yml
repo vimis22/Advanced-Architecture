@@ -1,0 +1,7 @@
+# NOTE: Full stack is now started from src/API-Gateway/docker-compose.yml.
+# This file is intentionally left empty to avoid accidentally starting a second
+# infrastructure stack (Postgres/Zookeeper/Kafka/Redis).
+#
+# To run the whole system, use:
+#   cd ../API-Gateway
+#   docker compose up --build

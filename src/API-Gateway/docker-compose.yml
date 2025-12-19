@@ -1,0 +1,112 @@
+services:
+  # Datastore
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bookproduction
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - advanced-architecture-network
+
+  # Messaging
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - advanced-architecture-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
+    networks:
+      - advanced-architecture-network
+
+  # Optional cache for rate limiting and other features
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - advanced-architecture-network
+
+  # Backend
+  orchestrator:
+    build:
+      context: ../Orchestrator
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - kafka
+    environment:
+      SPRING_CONFIG_NAME: orchestrator
+      DB_URL: jdbc:postgresql://postgres:5432/bookproduction
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SERVER_PORT: 8082
+    expose:
+      - "8082"
+    networks:
+      - advanced-architecture-network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - orchestrator
+      - redis
+    environment:
+      SERVER_PORT: 8080
+      ORCHESTRATOR_URI: http://orchestrator:8082
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    ports:
+      - "8080:8080"
+    networks:
+      - advanced-architecture-network
+
+  # React UI served via Nginx
+  external-service:
+    build:
+      context: ../External-Service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api-gateway
+    ports:
+      - "5173:80"
+    # The UI will call /api which Nginx proxies to api-gateway inside the network.
+    networks:
+      - advanced-architecture-network
+
+volumes:
+  postgres_data:
+
+networks:
+  advanced-architecture-network:
+    driver: bridge
