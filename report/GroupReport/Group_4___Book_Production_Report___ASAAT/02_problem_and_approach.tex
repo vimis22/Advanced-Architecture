@@ -1,0 +1,20 @@
+How do we build a Book Production System that distribute workload among production cells and thereby limits waiting time? Our Production consists of four production cells: pages printer, cover printer, binder, and packager. To produce a book, each production cell must contribute to its creation. However, this is not a linear production in which production cells are sequenced one after the other. In our case, the system needs to be able to handle both production cells in sequence and in parallel. Furthermore, the system must also be able to integrate new production cells if extra steps are required to produce a book.
+\emph{How do we create a software system:}
+\label{sec:research-questions}
+\begin{enumerate}
+    \item that is able to distribute work among multiple production cells?
+    \item that can handle both linear and non linear dependencies?
+    \item that can without changing the core architecture integrate new production cells?
+    \item that makes it possible to change the order of production cells?
+    \item that can account for failures at production cells, and redistribute work if needed? 
+\end{enumerate}
+
+\subsection{Approach}
+Our approach is to create a scheduling system, that distributes work between production cells and in the right order. As mentioned above, all four production cells must contribute. This creates a recipe for producing a book. The following steps are required: pages printing, cover printing, and binding. Once these three steps have been completed, the book needs to be packaged. So, to produce a book, four jobs must be completed. In our system, each job is processed by a production cell. The book must follow the order seen in figure \ref{fig:production_line}. The scheduling system is responsible for the order of production and that the recipe is fully completed. To account for failures, an observer pattern is added to the scheduling system to monitor production cells. Based on this, the proposed subsystem for the project has been to focus on the production side of the system.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/production_line.png}
+    \caption{Production Line}
+    \label{fig:production_line}
+\end{figure}

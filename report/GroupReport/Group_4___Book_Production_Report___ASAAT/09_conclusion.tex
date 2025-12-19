@@ -1,0 +1,35 @@
+% Conclusion of the report, discussion and relevant future work.
+
+This work set out to address the problem of how to design a book production system that effectively distributes workload among multiple production cells while minimizing waiting time, supporting flexible production flows, and remaining robust to machine failures. To answer this, we designed and evaluated a scheduler architecture capable of handling parallel production, dependency-aware job execution, dynamic reconfiguration, and fault tolerance through heartbeat-based monitoring and automatic job re-queuing. 
+
+The experimental results from the 100 batch-test orders demonstrates that the proposed architecture successfully meets the core research objectives. The system is able to distribute work across multiple production cells, support both linear and non-linear dependencies, and scale horizontally without performance degradation (Research Questions 1-3, see \ref{sec:research-questions}). This is further proved by the fact that order quantity has no statistically significant effect on completion time when controlling for waiting time and re-queues, confirming linear scalability and efficient parallel processing.
+
+Furthermore, the fault tolerant mechanisms performed very well. Machine failures are detected within three seconds, and requeued jobs introduce only minimal overhead. Despite an average of over 48 requeue events per order, the total impact on completion time remains negligible. This confirms that the system can handle production cell failures and dynamically redistribute work without disrupting overall throughput, directly addressing Research Question 5, see \ref{sec:research-questions}. 
+
+However, the evaluation also reveals a critical limitation, the scheduler induced waiting time dominates total completion time. Statistical analysis shows a correlation between waiting time and completion time, identifying scheduler inefficiency as the primary bottleneck in the current implementation. While the system architecture is fundamentally right, and supports reconfigurable production flows (Research Question 4, see \ref{sec:research-questions}), improvements in scheduling logic are required to fully realize its performance potential. 
+
+Overall, this study demonstrates that it is possible to build a flexible, fault tolerant, and scalable book production system that satisfies the stated research questions 1-5, see \ref{sec:research-questions}. The findings confirm that architectural decisions, such as particularly dependency-based queuing and heartbeat-driven fault detection are effective, while also highlighting scheduler optimization as the key area for further improvement. 
+
+\subsection{Discussion}
+\label{sec:Discussion}
+
+The findings demonstrate that robustness and scalability can be achieved in distributed production systems without significant performance reduction. The heartbeat-based fault tolerance mechanism provides rapid failure detection and recovery with minimal overhead. The evaluation also reveals that scheduler-induced waiting time dominates total completion time, accounting for nearly all observed performance variation. This highlights that, in distributed production environments, scheduling strategy has a greater impact on throughput than fault tolerance or dependency management. While the system supports flexible workflows and horizontal scaling, its current scheduler implementation does not fully exploit available production capacity under load, making the scheduler optimization the primary opportunity for performance improvement. \textbf{Please note, that Generative AI has been used to support and ask help for this project.} \cite{openai_chatgpt_used_as_tool_2025}.
+
+\subsection{Future work}
+\label{sec:future_work}
+
+Based on the findings of this study, several directions for future work are identified:
+\begin{enumerate}
+    \item \textbf{Integrate the rest of the components:} \\
+    Even if the core architecture is in place, there are still some components missing that needs to be integrated into the whole and should communicate with other different components such as the orchestrator, admin console, and monitoring tools. 
+    \item \textbf{Advanced Scheduler Optimization:} \\
+    Future implementations should focus on reducing waiting time through more responsive and intelligent scheduling strategies. this includes decreasing job assignment polling intervals, enabling true parallel order scheduling, and exploring event-driven scheduling rather than periodic polling.
+    \item \textbf{Dynamic Load-Aware Scheduling:} \\
+    Incorporating real-time machine load, queue lengths, and job priorities into scheduling decisions could further reduce idle time and improve throughput, particularly during peak demand periods. 
+    \item \textbf{Large-Scale and Real-World Deployment:} \\
+    While the current evaluation demonstrates strong results in a controlled Docker environment, future studies should validate the system under larger-scale deployments and real production conditions, to produce real machine info and failure patterns to correctly address them. 
+\end{enumerate}
+
+By addressing these areas, we can improve the system to potentially reduce waiting time, improve completion performance, and further strengthen the use of such an architecture to industrial-scale book production and similar distributed manufacturing systems.
+
+\nocite{misra2025_advancedArchitecture_repo}

@@ -1,0 +1,52 @@
+\subsection{Experiment Design}
+This section validates on the schedulers ability to distribute jobs efficiently and manage production cell errors in a robust manner. In the experiment, a observational quantitative design \cite{alipour_sdu_hcsd_study_design_lecture8_itslearning} with data from 100 batch-test orders were collected from the Unified Scheduler Service. The system builds on the heartbeat-monitoring, where machines sends status every second through MQTT. The lack of heartbeat in 3 seconds triggers an automatic error-detection and job-requeue. The data has been afterwards exported from TimescaleDB after being executed in a Docker-Environment and processed in R-Studio \cite{cantuaria_blamesvidal_sdu_mlr_lecture12_itslearning}.
+
+\subsection{Measurements \& Hypothesis}
+The main research question for our experiment is: What factors affect completion time, and does fault tolerance work effectively? We measured completion-time-minutes as outcome, with 3 factors. These factors are \textbf{quantity for order-size, total-requeues with error-management, and wait-time-seconds for scheduler inefficiency}.
+
+Based on the measurement factors, we have created the following hypothesis:
+\begin{itemize}
+    \item \textbf{Null Hypothesis: \cite{umair_sdu_scientific_methods_theory_lecture3_itslearning}} The three predictors (quantity, total-requeues, wait-time-seconds) have no significant effect on completion-time-minutes.
+    \item \textbf{Alternative Hypothesis: \cite{umair_sdu_scientific_methods_theory_lecture3_itslearning}} At least one predictor significantly affects completion-time-minutes.
+\end{itemize}
+
+A pilot test with 10 orders verified that the system detected production cell errors within 3 seconds and resumed production after restart. This confirmed that the heartbeat mechanism worked, and we continued afterwards with 100 orders for statistical validity.
+
+\subsection{Results \& Interpretation}
+Based on the analysis of the order-size in R \cite{cantuaria_blamesvidal_sdu_mlr_lecture12_itslearning}, we have got the following results.
+\begin{itemize}
+    \item \textbf{Descriptive Statistics: }The average completion time is 61.86 ms, while the waiting-time is 56 ms, re-queues = 48.4 and the order-size is 203 items.
+    \item \textbf{Correlation Analysis: }This analysis shows that the waiting-time had almost a perfect correlation with completion time (r=0.99) \cite{cantuaria_blamesvidal_sdu_mlr_lecture12_itslearning}, while quantity (r=0.10) and re-queues (r=-0.04) had minimal effect on completion-time.
+    \item \textbf{Multiple Lineare Regression: } Here we see that we have got a determination coefficient equivalent to 0.985, and F(3.96)=2179, with a p-value below 0.001 explained 98.55 \% of the variation.
+\end{itemize}
+
+Looking closer at each factor, we see the following:
+
+\begin{itemize}
+    \item \textbf{Wait-time (seconds):} 
+    $(\beta = 0.016,\; p < 0.001)$.
+    Each second of waiting time adds 0.016 ms to the completion time. 
+    Therefore, the alternative hypothesis is accepted, indicating that waiting time is the dominant factor. 
+    The scheduler causes orders to wait unnecessarily long before job assignment, which represents the primary bottleneck of the system. Please see Appendix figure \ref{fig:values_from_r}.
+
+    \item \textbf{Total requeues:} 
+    $(\beta = 0.054,\; p < 0.001)$.
+    Each requeue adds only a small amount of time to the overall completion time. 
+    The alternative hypothesis is accepted, showing that requeuing has a minimal impact. 
+    This supports the architectural decision of using heartbeat-based error detection with a 3-second timeout and automatic requeue, which proves to be effective. Please see Appendix figure \ref{fig:values_from_r}.
+
+    \item \textbf{Quantity:} 
+    $(\beta = 0.007,\; p = 0.309)$.
+    The result is not statistically significant, and therefore the null hypothesis is accepted. 
+    This indicates that the order size does not have a measurable effect on the completion time. Although the system scales perfectly linearly, confirming that parallel processing (jobs A and B running concurrently) prevents production bottlenecks. Please see Appendix figure \ref{fig:values_from_r}.
+\end{itemize}
+
+\subsubsection{Residual Graphs}
+Based on the given graphs, it is seen that there is a normal spread of values in the QQ-Graph, Histogram and Residual-Plot as shown in Appendix (figure \ref{fig:qqplot}, \ref{fig:histogram}, and \ref{fig:residual_plot}) with only 2-3 outliers \cite{cantuaria_blamesvidal_sdu_mlr_lecture12_itslearning}, for data amount equal to 100.
+
+\subsection{Discussion \& Recommendations}
+\textbf{Scheduler Optimization:} The regression analysis identifies waiting time as the dominant factor due to it being significant. The waiting time accounts for almost all of the variation in the completion time. With an average waiting-time of 56 ms before production starts. There are three recommendations. The first one is to reduce the job assignment polling interval from 500 ms to 100 ms in the configured appsettings.json file. 
+
+The second refactor to make, is the scheduler in order to support concurrent order processing rather than sequential handling. And then we have the third, were we scale horizontally by adding more machines of each type to increase capacity during peak load.
+
+Then we have the maintaining fault tolerance. The fault tolerance mechanisms do not require any changes, since requeue only adds 3 seconds of overhead per event, despite an average of 48 errors per order, showing that the heartbeat interval and error detection timeout are optimally balanced. This validates our architectural decision to use lightweight heartbeat based monitoring rather than explicit acknowledgment messages.

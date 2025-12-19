@@ -1,0 +1,88 @@
+This section describes the primary use cases of the Advanced Book Production system. The system uses a distributed microservices architecture to support customer order submission, backend order management, production coordination, and machine execution through asynchronous communication.
+
+\subsection{External-Service (Customer Portal)}
+
+\noindent The External-Service is a web-based portal that serves as the customer-facing user interface. The following use cases describe how customers interact with the system to create and submit book production orders.
+
+\begin{itemize}
+\item \textbf{Customer Creates New Book Production Order:}  
+An external customer submits a new book production order by providing required specifications such as title, author, number of pages, cover type, page type, and quantity. Upon submission, the system validates the input and forwards the request to the backend. If the request is accepted, an Order ID is returned and the order status is set to \texttt{PENDING}.
+
+\item \textbf{Form Validation and Error Handling:}  
+The system validates user input to ensure that all required fields are provided and values are within acceptable ranges. If validation fails, the user is informed and can correct the input before resubmitting.
+
+\item \textbf{Order Submission Error Handling:}  
+If a network failure or backend error occurs during order submission, the system informs the user and allows the request to be retried, ensuring robustness against temporary failures.
+\end{itemize}
+
+\subsection{API-Gateway}
+
+\noindent The \texttt{API-Gateway} acts as the single entry point for all external client requests.
+
+\begin{itemize}
+\item \textbf{Request Admission and Protection:}  
+The API-Gateway controls incoming traffic and protects backend services from overload. Requests that exceed allowed limits are rejected.
+
+\item \textbf{Request Routing and Forwarding:}  
+Requests that pass gateway checks are forwarded to the appropriate backend service for further processing. Invalid requests are rejected before reaching internal services.
+\end{itemize}
+
+\subsection{Orchestrator (Order Management Service)}
+
+\noindent The \texttt{Orchestrator} is responsible for managing production orders and initiating the production workflow.
+
+\begin{itemize}
+\item \textbf{Accept and Process Production Order:}  
+When a valid order request is received, the Orchestrator creates a new production order, assigns a unique Order ID, and prepares the order for production execution.
+
+\item \textbf{Retrieve Order Details and Status:}  
+Customers can retrieve the current status of an existing order by providing a valid Order ID. The system returns the order information and its current production state.
+
+\item \textbf{Handle Invalid Requests and Errors:}  
+If an order cannot be found or an error occurs while processing a request, the system returns an appropriate error response.
+\end{itemize}
+
+\subsection{Scheduler (Production Coordination)}
+
+\noindent The \texttt{Scheduler} is responsible for coordinating the execution of production orders across available production cells.
+
+\noindent When an order enters production, the Scheduler tracks the progress of individual book units and determines when a unit is ready to proceed to the next production step. Jobs are assigned only when required production dependencies have been satisfied, allowing production steps to execute sequentially or in parallel according to the production recipe.
+
+\noindent The Scheduler monitors the availability of production cells and ensures that work is distributed to compatible machines. If a production cell becomes unavailable during execution, the Scheduler redistributes affected work so that production can continue.
+
+\subsection{Production Cells (Machine-Level Execution)}
+
+\noindent The \texttt{Production Cells} represent physical machines responsible for executing individual production steps.
+
+\begin{itemize}
+\item \textbf{Production Cell Executes Assigned Job:}  
+A production cell receives a job assignment from the system and executes the assigned production task. Upon completion, the production cell signals that the task has finished and becomes available for new work.
+
+If a production cell becomes unavailable, it stops accepting new jobs. Production continues using other available cells, and the unavailable cell may rejoin execution once it becomes operational again.
+\end{itemize}
+
+
+\begin{comment}
+\subsection{Edge\_MQTT (Machine-Level Execution)}
+\noindent The $\text{\texttt{Edge\_MQTT}}$ use cases describe the fundamental machine behavior, covering how a production machine receives orders, executes work, and manages its state.
+
+    \begin{itemize}
+    \item \textbf{Machine Receives and Starts Production:} The machine receives production orders from the scheduler via its work-topic. The machine verifies its status as "idle", fetches the unit-id and order data, and updates its status to "running" with process at 0\%. It confirms the task by sending a heartbeat and begins the work process.
+    
+    
+    \item \textbf{Machine Executes Work and Becomes Available:} The machine gradually updates its progress during the work (1-5\% at a time). When the progress reaches 100\% , the machine sets the status to "completed" and sends a final heartbeat with 100\% progress. After a short delay, the machine resets its status, current $\text{\texttt{unit\_id}}$, and progress to "idle", sending a final heartbeat to signal its readiness for new orders.
+    \end{itemize}
+
+\subsection{UnifiedScheduler (Order Creation and Job Assignment)}
+\noindent The $\text{\texttt{UnifiedScheduler}}$ acts as the primary service for order ingestion (via console command) and initial job distribution, utilizing $\text{\texttt{TimescaleDB}}$ for data persistence and $\text{\texttt{Redis}}$ for job queuing.
+
+\begin{itemize}
+    \item \textbf{Console Order Creation and Initial Distribution:} The process is triggered when a user inserts the "order" command into the Scheduler Console. After the user provides the book information (title, author, amount of pages, etc.) , the Scheduler creates the order in $\text{\texttt{TimescaleDB}}$. It then creates individual units in $\text{\texttt{Redis}}$ based on the specified quantity and queues them for the first jobs (e.g., print and cover). The $\text{\texttt{JobAssigner}}$ component then finds available machines of the required types and immediately sends production orders via $\text{\texttt{MQTT}}$.
+    \item \textbf{Machine Faildown and Production Restart:} The system ensures production resilience through automatic failover. The $\text{\texttt{HeartbeatMonitor}}$ regularly checks machine heartbeat times in $\text{\texttt{Redis}}$. If a machine fails to send 3 consecutive heartbeats (a 3-second timeout), the Monitor marks the machine as "failed" in $\text{\texttt{Redis}}$ and collects the unit the machine was working on. The $\text{\texttt{JobQueueManager}}$ then resets the unit back into the queue with the highest priority. The $\text{\texttt{JobAssigner}}$ immediately distributes this task to a new available machine of the same type, ensuring production continues.
+\end{itemize}
+    \end{comment}
+
+    \subsection{Requirements and Non-Functional Requirements}
+    The described use cases illustrate how the system's central actors and components interact in connection with the creation of order, orchestration and execution of book production. Based on these use cases, a number of requirements can be derived that the system must meet in order to support the project's purpose and defined scope.
+
+    In order to create a clear relation between the use cases and the architecture analysis, the most important architecture relevant requirements are summarized in Appendix Figure \ref{fig:requirements_table}. The table contains both functional and non-functional requirements that are directly derived from the described use cases and the observed interaction patterns between the user interface, backend services, and production machines.

@@ -1,0 +1,49 @@
+
+\subsection{Background The shift to Networked Manufacturing}
+The transition to industry 4.0 (I4.0) represents a fundamental shift in how production environments are organized and integrated. Usually, manufacturing has relied on the hierarchical "automation pyramid" where information flows from field devices to control systems and finally to enterprise planning \cite{Jepsen2020}. However, as shown in the pilot study by Jepsen et al. this hierarchy is being replaced by a "Network Constructed Model" \cite{Jepsen2020}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/Automation pyramid and Network model.png}
+    \caption{The traditional hierarchical automation pyramid and the I4.0
+network constructed model \cite{Jepsen2020}}
+    \label{fig:automation_pyramid}
+\end{figure}
+As seen in the Network Constructed Model, devices, products, and systems must communicate as nodes in a network, enabling flexible and individualized production. This concept is built upon in later research by Jepsen et al. (2021), which emphasizes that flexible production facilities must "adapt to a production order without necessarily changing the layout of the factory" \cite{Jepsen2021}.
+
+For the domain of book production, this model is critical. Integrating diverse machines such as page printers, cover printers, binders, and packagers requires moving away from the static hierarchies to a more dynamic, event-driven architecture. This architecture must handle not only sequential steps but also "advanced production processes" such as parallel workflows (e.g. printing covers and pages simultaneously), a requirement that has been identified in modern I4.0 research contexts \cite{Jepsen2021}.
+
+\subsection{Related Work: Challenges and Requirements}
+While the model of a networked smart factory is well defined, practical implementation faces some issues. Jepsen et al. (2020) examined the readiness of assets like AGVs and robot cells, identifying primary interoperability challenges \cite{Jepsen2020}. Their subsequent work (2021) formalized the requirements for a middleware that can handle complex process flows \cite{Jepsen2021}.
+
+These studies highlight three key areas that directly inform our system design:
+
+
+\begin{itemize}
+    \item \textbf{The "Information Backbone" Gap:} To facilitate communication between heterogeneous assets, Jepsen et al. initially proposed the need for an "Information Backbone" (IB) which is a software infrastructure designed to provide a communication layer between assets \cite{Jepsen2020}.
+    
+    \item \textbf{Asset Maturity and Heterogeneity:} The pilot study found that "interoperability readiness" varies significantly due to missing interfaces or poor documentation \cite{Jepsen2020}. This heterogeneity makes achieving "seamless vertical and horizontal integration" difficult \cite{Jepsen2020}.
+    
+    \item \textbf{Need for Advanced Process Logic:} Beyond simple connectivity, Jepsen et al. (2021) identify the need for systems that can handle "Complex Processes," including \textit{parallel} and \textit{shared} processes \cite{Jepsen2021}. They argue that to achieve flexibility, facilities must reason about parallelism (two processes running independently) and resource sharing, rather than just linear sequences.
+\end{itemize}
+
+
+\begin{comment}
+\subsection{Project Context: An Information Backbone for Book Production}
+This project builds directly upon these findings by implementing a concrete realization of the "Information Backbone" and "Middleware" concepts specifically for the book production domain.
+
+Where the pilot study \cite{Jepsen2020} identified the theoretical need for connectivity, and the 2021 research \cite{Jepsen2021} defined the requirements for flexible routing, the authors "Advanced Book Production System" implements this through a distributed microservices architecture. The authors solution aligns with the related work as follows:
+
+\begin{itemize}
+    \item \textbf{Realizing the Middleware Architecture:} 
+    Jepsen et al. (2021) describe a middleware architecture consisting of an "Orchestrator" (for coordination) and a "Message Bus" (for communication) \cite{Jepsen2021}. The authors system mirrors this structure. The central \textbf{Event Bus} (Kafka) functions as the Message Bus, while the \textbf{Order Management System} acts as the Orchestrator. This decouples physical machines (printers, binders and so on) from the logic, enabling the "networked" flow.
+
+    \item \textbf{Enabling Parallel Production:} 
+    The authors architecture specifically addresses the requirement for "Parallel Processes" identified in \cite{Jepsen2021}. In book production, the cover and pages are often produced simultaneously on different machines (a parallel process) before merging at the binder (a shared process). The event driven design allows these independent streams to execute concurrently which is fulfilling the requirement for advanced production processes.
+
+    \item \textbf{Solving the Interoperability Challenge:} 
+    To tackle the "maturity gap" found in the pilot study \cite{Jepsen2020}, the authors architecture introduces a standardized \textbf{Edge Gateway} and Adapter Pattern. This layer abstracts machine-specific information and standardizes communication into unified protocols that is MQTT. Ensuring that legacy machines can be integrated into the smart network without altering the core system.
+\end{itemize}
+
+By situating this software as a practical application of the concepts explored by Jepsen et al., this project aims to resolve specific integration bottlenecks. Such as the inability to handle non-linear production flows and high reconfiguration costs, that currently affect the book production industry.
+\end{comment}

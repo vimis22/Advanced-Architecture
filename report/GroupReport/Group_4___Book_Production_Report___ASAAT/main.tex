@@ -1,0 +1,138 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{icomma}
+\usepackage[T1]{fontenc}
+
+% Packages
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{mdframed}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{pgfplots}
+\usepackage{makecell}
+\usepackage{tcolorbox}
+\usepackage{amsthm}
+\usepackage{pifont}
+\usepackage{listings}
+
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+
+\lstset
+{ 
+    basicstyle=\footnotesize,
+    numbers=left,
+    stepnumber=1,
+    xleftmargin=5.0ex,
+}
+
+% SCJ
+\usepackage{array, multirow}
+\usepackage{enumitem}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{\textbf{Book Production System}}
+
+\author{
+    \IEEEauthorblockN{
+        Anders Risager Kristensen\IEEEauthorrefmark{1},
+        Kasper Mandal Stehning\IEEEauthorrefmark{1},
+        Marco Lambrecht Jacobsen\IEEEauthorrefmark{1},
+        Mohamed Gomaa\IEEEauthorrefmark{1},
+        Vivek Misra\IEEEauthorrefmark{1}
+    }
+    \IEEEauthorblockA{
+        University of Southern Denmark, SDU Software Engineering, Odense, Denmark \\
+        Email: 
+        \IEEEauthorrefmark{1} \textnormal{\{akris19,kaste20,marja22,mogom21,vimis22\}}@student.sdu.dk \\
+        \textnormal{Group Number: 4}
+    }
+}
+
+\maketitle
+
+% page number
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage\ / \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\thispagestyle{fancy}
+\IEEEpubidadjcol
+
+\begin{abstract}
+%this is abstract
+
+Modern production systems increasingly operate in complex, distributed environments where tasks must be coordinated across multiple production cells while remaining flexible and resilient to failure. Traditional linear production models are insufficient for such settings, as they do not support parallel processing, dynamic reconfiguration, or robust fault handling. This article addresses these challenges in the context of book production, where production cells must execute tasks with both linear and non-linear dependencies.
+
+We propose a software-based scheduling architecture that distributes workload among multiple production cells, enforces dependency-aware execution, supports dynamic reordering, and expansion of production steps, and maintains fault tolerance through heartbeat-based monitoring and automatic job re-queuing. 
+The system models book production and is evaluated using 100 batch-test orders in a containerized environment with simulated machines failures. Statistical analysis shows that the system scales linearly with order size, as quantity has no significant effect on completion time. Fault tolerance mechanisms perform efficiently, detecting failures within three seconds and introducing only minimal overhead despite the frequent re-queue of events. However, the evaluation also identifies scheduler-induced waiting time as the prime factor affecting completion time, revealing scheduling inefficiency as the primary performance bottleneck. 
+
+The results demonstrate that it is possible to build a flexible, scalable, and fault-tolerant book production system that effectively distributes workload across multiple production cells and handles task dependencies. While the architectural design proves robust and extensible, there is a need for further optimization of scheduling logic to significantly reduce waiting time and fully realize the systems performance potential.
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+Distributed Book Production, Architecture, Containerized Docker Environment, Database, Job Scheduling, Parallel Processing, Dependency-aware, Fault Tolerance, Heartbeat Monitoring, MQTT, Kafka, REST API, Scalability, Performance, Quality Attribute Tactics, UPPAAL
+\end{IEEEkeywords}
+
+
+\section{Introduction and Motivation}
+\label{sec:introduction}
+\input{01_introduction_and_motivation}
+
+\section{Problem and Approach}
+\label{sec:problem}
+\input{02_problem_and_approach}
+
+\section{Background and Related Work}
+\label{sec:related_work}
+\input{03_related_work}
+
+\section{Use Case}
+\label{sec:use_case}
+\input{04_use_case}
+
+\section{Quality Attribute Scenario}
+\label{sec:qas}
+\input{05_quality_attribute_scenario}
+
+\section{Design and Analysis Modelling}
+\label{sec:design_and_analysis_modelling}
+\input{06_design_and_analysis_modelling}
+
+\section{Formal verification and validation}
+\label{sec:formal_v_and_v}
+\input{07_formal_verification_and_validation}
+
+\section{Evaluation}
+\label{sec:evaluation}
+\input{08_evaluation}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{09_conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references} % use references or old_referneces
+
+\newpage
+\section{Appendix}
+\label{sec:appendix}
+\input{10_appendix}
+
+\vspace{12pt}
+
+\end{document}

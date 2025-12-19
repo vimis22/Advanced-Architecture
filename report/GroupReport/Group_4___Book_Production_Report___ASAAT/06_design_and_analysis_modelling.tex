@@ -1,0 +1,78 @@
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{images/Architecture.png}
+    \caption{Structural Architecture Modeling}
+    \label{fig:placeholder}
+\end{figure}
+
+\subsection{Architectural Overview}
+
+\noindent The Advanced Book Production System is designed as a distributed, event-driven microservice architecture intended to coordinate book production across multiple independent production cells. The architecture separates user interaction, order management, scheduling, and machine execution, enabling non-linear and parallel production flows while keeping machine execution decoupled from coordination logic.
+
+\noindent This work follows the middleware-oriented approach described by Jepsen et al.~\cite{Jepsen2020,Jepsen2021} by realizing an Information Backbone for service-to-service coordination and an edge-facing communication layer for production assets. Kafka is used as the Information Backbone for durable, asynchronous system events, while machine-level control and monitoring are handled via MQTT through an adapter-based integration approach. The overall architecture is designed at system level; the Scheduler and the MQTT-based machine communication are implemented and evaluated as the main scope of the prototype.
+\subsection{Rationale for Architectural Tactic Selection}
+
+\noindent The architectural tactics applied in the Advanced Book Production System are selected to satisfy the Quality Attribute Scenarios (QAS) defined in Section V and to realize the architectural concepts of an Information Backbone and middleware-based coordination identified in prior work. The focus is on decoupling, fault isolation, and controlled coordination in a distributed production environment.
+
+\subsubsection{Event-Driven Information Backbone}
+
+\noindent Kafka is chosen as the system’s Information Backbone to address performance, scalability, and availability requirements. The QAS require the system to react to production state changes without blocking and to support non-linear and parallel production flows. An event-driven backbone enables asynchronous communication between services, removing tight temporal coupling between order management and production coordination.
+
+\noindent By persisting events, Kafka ensures that production state changes are not lost during temporary service outages, supporting recovery and continued operation in accordance with the availability scenarios.
+
+\subsubsection{Separation of Backbone and Machine Communication}
+
+\noindent The separation between backbone communication and machine-level communication is a deliberate design decision driven by modifiability and interoperability requirements. The QAS require that new production cells and production steps can be introduced without extensive restructuring of the system.
+
+\noindent Treating machine communication as protocol-specific and separate from the backbone allows heterogeneous and legacy production cells to be integrated through adapters. This preserves a stable core architecture while enabling future expansion and evolution of production assets.
+
+\subsubsection{Centralized Scheduling with Decentralized Execution}
+
+\noindent A centralized Scheduler is selected to satisfy correctness and reliability scenarios that require consistent enforcement of production dependencies and coordinated recovery from failures. The QAS require that production steps with linear and non-linear dependencies execute in the correct order without loss or duplication of work.
+
+\noindent Centralized scheduling provides a global view of production state, while execution remains decentralized across independent production cells. This combination supports parallel production and horizontal scalability without coupling machines to global coordination logic.
+
+\subsubsection{Dependency-Aware Job Queuing}
+
+\noindent Dependency-aware job queuing is used to satisfy performance and correctness requirements. The QAS require that production steps execute only when their prerequisites are fulfilled, while still allowing parallel execution where possible.
+
+\noindent Maintaining separate job queues per production step simplifies scheduling decisions and prevents invalid execution sequences, ensuring predictable behavior under concurrent load. 
+
+\subsubsection{Heartbeat-Based Fault Detection and Recovery}
+
+\noindent Heartbeat-based monitoring and automatic job redistribution are selected to satisfy reliability and availability scenarios. The QAS require that production continues despite failures of individual production cells.
+
+\noindent Periodic status updates allow the Scheduler to detect failures without synchronous communication or handshakes. When a failure is detected, affected jobs are requeued and redistributed, ensuring continued production without manual intervention. This passive monitoring approach also supports scalability, as additional production cells do not increase coordination overhead. Additionally, queues operates with priorities: low, medium, and high to make sure that units that have been requeued are prioritized. Units that awaits a parallel steps gets priority medium so they will more quicker through the production line.   
+
+\subsubsection{Periodic Scheduling and Design Trade-offs}
+
+\noindent Periodic scheduling represents a pragmatic trade-off between simplicity, correctness, and responsiveness. While, the QAS emphasize timely reaction to production state changes, they do not require strictly event-driven scheduling decisions.
+
+\noindent This approach simplifies concurrency handling and state consistency but introduces scheduler-induced waiting time under load. The trade-off is explicitly acknowledged and later validated through empirical evaluation, where waiting time is identified as the dominant performance bottleneck.
+
+\subsubsection{Motivation for Formal Verification}
+
+\noindent The combination of asynchronous communication, centralized coordination, failure recovery, and timing constraints introduces complex execution paths that cannot be exhaustively validated through testing alone. Several QAS require guarantees related to correctness, availability, and recovery across all possible execution interleavings.
+
+\noindent For this reason, the Scheduler, production flow, and failure handling mechanisms are selected for formal verification using UPPAAL, as presented in the following section.
+
+
+\begin{comment}
+\subsection{Project Context: An Information Backbone for Book Production}
+This project builds directly upon these findings by implementing a concrete realization of the "Information Backbone" and "Middleware" concepts specifically for the book production domain.
+
+Where the pilot study \cite{Jepsen2020} identified the theoretical need for connectivity, and the 2021 research \cite{Jepsen2021} defined the requirements for flexible routing, the authors "Advanced Book Production System" implements this through a distributed microservices architecture. The authors solution aligns with the related work as follows:
+
+\begin{itemize}
+    \item \textbf{Realizing the Middleware Architecture:} 
+    Jepsen et al. (2021) describe a middleware architecture consisting of an "Orchestrator" (for coordination) and a "Message Bus" (for communication) \cite{Jepsen2021}. The authors system mirrors this structure. The central \textbf{Event Bus} (Kafka) functions as the Message Bus, while the \textbf{Order Management System} acts as the Orchestrator. This decouples physical machines (printers, binders and so on) from the logic, enabling the "networked" flow.
+
+    \item \textbf{Enabling Parallel Production:} 
+    The authors architecture specifically addresses the requirement for "Parallel Processes" identified in \cite{Jepsen2021}. In book production, the cover and pages are often produced simultaneously on different machines (a parallel process) before merging at the binder (a shared process). The event driven design allows these independent streams to execute concurrently which is fulfilling the requirement for advanced production processes.
+
+    \item \textbf{Solving the Interoperability Challenge:} 
+    To tackle the "maturity gap" found in the pilot study \cite{Jepsen2020}, the authors architecture introduces a standardized \textbf{Edge Gateway} and Adapter Pattern. This layer abstracts machine-specific information and standardizes communication into unified protocols that is MQTT. Ensuring that legacy machines can be integrated into the smart network without altering the core system.
+\end{itemize}
+
+By situating this software as a practical application of the concepts explored by Jepsen et al., this project aims to resolve specific integration bottlenecks. Such as the inability to handle non-linear production flows and high reconfiguration costs, that currently affect the book production industry.
+\end{comment}

@@ -1,0 +1,68 @@
+% QUALITY ATTRIBUTE SCENARIO
+
+This chapter represents the Quality Attribute Scenarios (QAS) derived from the described use cases in Chapter \ref{sec:use_case} and the architecture-relevant function and non-functional requirements mentioned in Appendix Figure \ref{fig:requirements_table}. The objective of QAS is to operationalize non-functional requirements, so that they can be used directly to guide architecture design, choice of tactics, and subsequent formal verification and evaluation. While use cases describe the expected behavior of the system in specific workflows, QAS means to make non-functional requirements measurable. This creates a clear link between the projects problem, the defined scope, and the architectural design decisions.
+
+
+\subsection{Relation between Requirements, Scope \& QA}
+The derived requirements from Appendix Table \ref{fig:requirements_table} show that the success of the system does not only depend on the correct functionality of the system. But instead to a large extent on its quality characteristics. The scope of the project focuses on the orchestration, and coordination of book production in a distributed production environment, where machines can be added, removed or failed during operation. This sets special demands on the architecture, which cannot be addressed through our derived functional and non-functional requirements alone.
+
+Based on the analysis of requirements, here are the following Quality Attributes identified as critical for the architecture of the project:
+\begin{itemize}
+    \item \textbf{Performance} is used to ensure timely handling of machine status and production changes. \cite{hawkerKuehl2017_qualityAttributesTactics}
+    \item \textbf{Scalability} is used to support the expansion of production capacity. \cite{hawkerKuehl2017_qualityAttributesTactics}
+    \item \textbf{Reliability} is used to ensure continued operation in the event of machine failure. \cite{hawkerKuehl2017_qualityAttributesTactics}
+    \item \textbf{Modifiability} is used to enable changes and expansions without extensive rebuilding. \cite{hawkerKuehl2017_qualityAttributesTactics}
+    \item \textbf{Availability} is used to avoid data loss and ensure stable communication. \cite{hawkerKuehl2017_qualityAttributesTactics}
+\end{itemize}
+
+Other Quality Attributes such as reliability and usability have been categorized as secondary in accordance with the prime focus of the project and are therefore not operationalized in the form of QAS in the report.
+
+It is important to note that each Quality Attribute Scenario follows the known 6-step model \cite{bass2022softwarearch} \cite{recw2021_saUnit3_qualityAttributes}, which is comprised of the following: 
+\begin{itemize}
+    \item \textbf{Source of Stimulus:} The entity that generates the (stimulus/event)
+    \item \textbf{Stimulus:} Shows the actual event.
+    \item \textbf{Environment:} Is the condition where the stimulus happens.
+    \item \textbf{Artifact:} Which part of the system is affected?
+    \item \textbf{Response:} How does the system react?
+    \item \textbf{Response Measure:} Shows how success is measured.
+\end{itemize}
+
+
+\subsection{Performance}
+Performance is an essential quality attribute for the project, since the system continuously receives status updates from multiple machines and has to react quickly on changes during production. Delays in the processing of these events can result in an non-efficient usage of production resources or delayed information of the current system status.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/performance1_qas.png}
+    \caption{Performance QAS}
+    \label{fig:performance}
+\end{figure}
+
+In order to address the performance quality attribute \cite{worm2025_sdu_itslearning_lecture23} from the perspective of the project scope, the performance is primarily addressed through tactics within \textbf{Control Resource Demand} rather than only increasing resources.
+
+The dominant tactic is to \textbf{manage work request} \cite{bass2022softwarearch} \cite{hawkerKuehl2017_qualityAttributesTactics}, which is achieved through asynchronous (indirect) event-based communication. This reduces the blocking between components and ensures that machines are not waiting for direct responses. The \textbf{Reduce Computational Overhead} \cite{bass2022softwarearch} \cite{hawkerKuehl2017_qualityAttributesTactics} tactic supports this approach by using MQTT as a lightweight machine level protocol. Tactics from managng resources, such as \textbf{Introduce Concurrency} \cite{bass2022softwarearch} are also used, but as secondary through \textbf{parallel event processing} and \textbf{horizontal scaling} \cite{modi2024_scalabilityStrategiesScaling}.
+
+This prioritization of \textbf{Reduced Load} \cite{bass2022softwarearch} \cite{hawkerKuehl2017_qualityAttributesTactics} over aggressive \textbf{Resource Increase} \cite{bass2022softwarearch} \cite{hawkerKuehl2017_qualityAttributesTactics} reflects on the systems focus on efficient real-time coordination of scheduling production jobs, as shown in figure \ref{fig:performance}.
+
+
+\subsection{Scalability}
+The system is able to manage overload by increasing resources or start up new containers if necessary.
+
+The primary tactic considered here is \textbf{Increase Resources} \cite{bass2022softwarearch} \cite{hawkerKuehl2017_qualityAttributesTactics} from Performance, which is realized through \textbf{horizontal scaling} \cite{modi2024_scalabilityStrategiesScaling} of central services from Scaling Tactics. Along with this performance-tactics such as \textbf{Maintain Multiple Copies of Computations} \cite{bass2022softwarearch} enable parallel processing of production task. In order to ensure stability, it has been combined with \textbf{Bond Queue Sizes} \cite{bass2022softwarearch} and \textbf{Schedule Resources} \cite{bass2022softwarearch} from Performance, which ensure a controlled overload. By using these tactic-forms, it supports containerized architecture of the project, as shown in figure \ref{fig:scalability}.
+
+
+\subsection{Reliability}
+Reliability is important in order to ensure continuous production in the event of machine failures. The focus is mainly to detect faults and recover from faults.
+
+Faults are detected through heartbeat and condition monitoring, enabling a rapid response. In the event of a fault, tactics for recovering from faults such as \textbf{Retry, Reconfiguration, and Redundant Spare, and Fault Detection} \cite{bass2022softwarearch} \cite{hawkerKuehl2017_qualityAttributesTactics} \cite{kazman_2022} from the availability quality attribute are activated, where the Scheduler redistributes tasks to functioning machines. Please see figure \ref{fig:reliability} in the Appendix Section.
+
+\subsection{Modifiability}
+Unlike Reliability \& Scalability, Modifiability is also important since the system needs to be scaled and changed over time. The addressed tactics in this context is \textbf{Reduce Coupling} \cite{bass2022softwarearch}, which has been supported by \textbf{Increase Cohesion and Defer Binding} \cite{bass2022softwarearch}.
+
+Whereas tactics from \textbf{Integribility} such as \textbf{Use an Intermediary} \cite{bass2022softwarearch} \cite{worm2025_sdu_itslearning_lecture23} has been implemented through Kafka as an event bus, reducing direct dependencies between services. \textbf{Encapsulate and Abstract Common Services} \cite{bass2022softwarearch} ensure stable contracts, while adapter-based integration supports Polymorphism. \textbf{Defer Binding} \cite{bass2022softwarearch} from Modifiability is used through configuration-based and dynamic machine connection, which enables changes without conducting big refactoring to the system. Please see figure \ref{fig:modifiability} in the Appendix Section.
+
+
+\subsection{Availability}
+Availability focuses on the systems ability to remain in operation even under partial errors and network problems. Tactics like \textbf{Recover from Faults} \cite{bass2022softwarearch} \cite{kazman_2022} are used as a primary, which is supported by \textbf{Detect Faults} \cite{bass2022softwarearch} \cite{kazman_2022} from Availability.
+
+Persistent events in Kafka enable \textbf{State Resynchronization} \cite{bass2022softwarearch} and \textbf{Non-stop Forwarding} \cite{bass2022softwarearch}, so that data is not lost in the event of temporary outages. \textbf{Removal from Service and Graceful Degradation} \cite{bass2022softwarearch} \cite{hawkerKuehl2017_qualityAttributesTactics} are used to isolate failed components and maintain reduced functionality rather than complete shutdown. This strategy prioritizes continued operation over complete failure-freedom, as shown in figure \ref{fig:availability} in the Appendix Section.

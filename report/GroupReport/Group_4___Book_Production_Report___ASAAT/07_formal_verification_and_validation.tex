@@ -1,0 +1,122 @@
+\subsection{Why Verification \& Validation?}
+The purpose with the formal verification and validation in this project is to reach a systematical and exact analysis of the behavior of the system \cite{kang_riaz_sdu_uppaal_lectures_8_10_2025}, which cannot be observed through a traditional JUnit-test or simulation alone. Especially in distributed microservices like this project, with error management can result in sudden occurrence of hindrances, which can result in manual inspection as inefficient.
+
+\vspace{0.3cm}
+
+Therefore by using formal models based on Timed Automata \cite{visualparadigm_state_machine_diagram} \cite{david2009_uppaal_small_tutorial}, the systems behaviour can be analyzed through transitions and locations. This enables us to verify, if the system follows the key properties such as correct error handling, in context to time-constraint without deadlocks across all possible executable paths.
+
+\vspace{0.3cm}
+
+The formal verification is used in the project as supplement to the architectural design process. Please note, that the verification is not used as replacement of an implementation JUnit test. The focus is therefore directed towards the most critical part of the book architectural system, which hereby constitutes of production-flow, machine-distribution and recovery-mechanisms where error do have consequences for the reliability and stability of the system and its performance.
+
+\vspace{0.3cm}
+
+Considering the validation of the system is done through formulation of safety and availability of properties that are related to the identified functional and non-functional requirements from section \ref{sec:use_case}. In that way, the formal verification supports increased confidence that the architecture meets its design goals \cite{kang_riaz_sdu_uppaal_lectures_8_10_2025} and that key assumptions about the systems behavior hold under relevant conditions.
+
+\subsection{Scope and Focus Area of UPPAAL}
+As mentioned in the beginning of the report. The scope area of the project is the Scheduler and MQTT part of the system, where the machines distributes the production order. Therefore in order to match our purpose, we will in the validation \& verification section focus on the distributed book production, machine's job-distribution and fail-down and recovery.
+
+\subsection{UPPAAL \& Timed Automata}
+In order to understand Timed Automata, we need to understand two concepts which are "Formal" and "Informal" \cite{proenza2008_uppaal_model_checker}. Informal Descriptions are used to explain the system in a more general level, whereas Formal Descriptions use exact mathematical models to verify correctness of the system.
+
+In this project Timed Automata has been used with model-checking in UPPAAL, as a formal model to explain the behaviour of the system with time-constraints. The Model expands the classical known state machine diagrams with clocks, guards and invariants, which ensures specification of sequence and duration of events in the system.
+
+\subsection{Overall Model Structure in UPPAAL}
+The formal method has been built with the network of Timed Automata \cite{kang_riaz_sdu_uppaal_lectures_8_10_2025}, where each automation represents a central architectural component in the system. The model reflects the overall architecture through seperations of concerns between order, production, machine behaviour and monitoring \& recovery. Our UPPAAL Model Checking consists of the following templates.
+
+\begin{itemize}
+    \item \textbf{Order Template:} This template models the lifecycle of a production order and the key order states, including pending, orchestrated, completed, and rejected. It is used to analyze proper transition between states and handling retries and timeouts.
+    \item \textbf{Scheduler Template:} This template model represents planning, and distribution of production jobs to available machines. It works as a component, that coordinates between orders and production pipelines and is used to analyze correct resource-allocation and job distribution.
+    \item \textbf{Pipeline Template:} This template models the productions-flow, where an order goes through different production phases. The time-constraint clocks are used to analyze progress and maximum production time along verification of established time-frames.
+    \item \textbf{Machine Template:} This template shows the behavior for individual machines, under different conditions such as normal, error, and recovery. It is used to analyze the availability of machines, management of shutdown and constraint of error.
+    \item \textbf{Healthmonitor Template:} This last template models the monitoring of the state of the system with the use of heartbeats. It is used to detect lack of response and to analyze the system's response to errors through alarming situations.
+\end{itemize}
+
+\subsection{Time-Constraints \& its use.}
+Time-Constraints has been modeled with the use of clocks, guards and invariants in more templates \cite{voros2013_short_uppaal_intro}. Each clock is used to measure the duration of specific activities and conditions, which enables the analyzing of both response-time, deadlines and recovery-time in the system.
+
+The timing as demonstrated in UPPAAL is critical for distributed production system, since delays can result in long queues of orders, unavailable machines and lack of error-detection. Therefore by modeling time explicitly, the reaction of the system on delays, errors and recovery can be analyzed. The selected time-modeling supports therefore verification of performance-related requirements along with stability of the system. The book production UPPAAL-model uses more clocks, which have a defined responsibility. These are the following:
+\begin{itemize}
+    \item \textbf{healthclock}: Is used to measure the time, from last heartbeat recieved.
+    \item \textbf{machineclock:} Is used to measure work time and recovery-time for a machine.
+    \item \textbf{orchestratorclock:} Is used to measure time, especially when an order is being orchestrated or is in a waiting-state.
+    \item \textbf{schedulerclock:} Controls the sending of a heartbeat.
+    \item \textbf{pipelineclock:} This measures the production time between the pipeline-phases.
+\end{itemize}
+As seen above, we have given the clock specified names in order to reduce confusion of time-measurements and which part of the system they are related to.
+
+\subsection{Guards \& Invariants}
+Invariants are used on locations to set an upper time limit for how long the system can stay in a state. In our Pipeline Template, $\texttt{PRINT\_MAX}$, $\texttt{BINDING\_MAX}$ and $\texttt{PACK\_MAX}$ ensure that each production phase cannot take longer than allowed.
+
+Guards are used on transitions and ensure that changes can only occur when a condition is met. For example, a machine can only leave \texttt{Recovering} when $\texttt{machineclock} \geq \texttt{RECOVERY\_TIME}$, and an order can only retry when $\texttt{orchestratorclock} > \texttt{ORCH\_MAX}$. Combined with input/output synchronization \cite{kang_riaz_sdu_uppaal_lectures_8_10_2025}, this ensures that both timing requirements and correct ordering between templates are enforced.
+%The purpose with the invariants on nodes aka. locations is to define how long the system can maximum remain in a specified state. As shown in the attached UPAAL-program, a clear example is shown in the Pipeline-Template where it is seen that invariants such as \texttt{PRINT\_MAX}, \texttt{BINDING\_MAX}, and \texttt{PACK\_MAX} have the purpose of ensuring that each production phase does not exceed its maximum allowed time. 
+
+\vspace{0.2cm}
+
+%Speaking of guards, they are applied to transitions to ensure that state changes can only occur when certain conditions are met. For example, a machine is only allowed to leave the \textit{Recovering} state when 
+%$\texttt{machineclock} \geq %\texttt{RECOVERY\_TIME}$, and an order is only allowed to retry when it has exceeded its orchestration deadline, expressed as 
+%$\texttt{orchestratorclock} > %\texttt{ORCH\_MAX}$. By using guards in combination with \textbf{input \& output synchronization}, it ensures that minimal and maximal times are enforced correctly.
+
+\subsection{Modeling of Deadlines}
+Deadlines are modeled with clocks and guards: $\texttt{orchestratorclock}$ controls whether an order manages to be orchestrated on time or ends in retry/failure, and the Pipeline limits the entire process with $\texttt{MAX\_PRODUCTION\_TIME}$.
+
+%Deadlines are demonstrated through the use of clocks and guards. In the Order template, the 
+%$\texttt{orchestratorclock}$ is used to ensure that an order is either orchestrated within a given time limit or transferred to a retry or error state. This makes it possible to analyze how the system reacts to late orchestration. 
+
+%The same principle is applied in the pipeline template, where a clock ensures that the production process does not exceed a maximum production time defined by 
+%$\texttt{MAX\_PRODUCTION\_TIME}$.
+
+\subsection{Modeling of Recovery Time}
+Recovery time is modeled in the Machine template by resetting $\texttt{machineclock}$ on \texttt{Down} and only allowing a return to \texttt{Idle} when the recovery time has been met.
+
+%Recovery-Time for machines are modelled in the Machine-template with the use of clock attribute $\texttt{machineclock}$. When a machine reaches its down-state, then the clock is reset and the machine can first transit to the recovering-state and thereafter back to the idle-state, when the defined recovery-time has been fulfilled.
+
+\subsection{Modelling of Maximum Production Time}
+In the Pipeline-Template, the pipeline clock attribute is used to measure the overall production time through the different production phases. The invariants for each phase limits the allowed time \cite{proenza2008_uppaal_model_checker}, and exceeding of these limitation that lead to an error-state. This modeling ensures, that it is possible to verify that the production is either executed correctly within the time-limit or if it fails in a controlled manner. Please see Appendix figure \ref{fig:pipeline_template}.
+
+\subsection{Examining Properties}
+In the formal model, the systems correctness is analyzed with the use of both safety- and liveness properties. These properties are used to verify, that the system does not reach a unexpected state in terms of safety.
+
+The \textbf{Safety Properties} in the system are used to ensure that the system never finds itself in a shutdown-state \cite{kang_riaz_sdu_uppaal_lectures_8_10_2025}. A clear example can be taken from the machine template from Appendix figure \ref{fig:machine_template}, where the following verification query defines that a machine in a shutdown-state may never be marked as available.
+\begin{equation}
+\texttt{A[]} \bigl( \texttt{Machine0.Down} \Rightarrow \texttt{machineUp[0]} = \texttt{false} \bigr)
+\end{equation}
+Afterwards it has been verified, through the retry's that the orders does not exceed its maximum limits through the following verification query:
+\begin{equation}
+\texttt{A[]} \bigl( \texttt{OrderProc.retryCount} > \texttt{MAX\_RETRIES} \bigr)
+\end{equation}
+
+\textbf{Liveness-properties} is used to verify that the system is not halted \cite{kang_riaz_sdu_uppaal_lectures_8_10_2025}, but things like orchestration of order can happen. This is what the following query does:
+\begin{equation}
+\texttt{E<>} \bigl( \texttt{OrderProc.Orchestrated)}
+\end{equation}
+Whereas it also verifies, that the machines can also recover after error.
+\begin{equation}
+\texttt{E<>} \bigl( \texttt{Machine0.Recovering)}
+\end{equation}
+These properties support the analysis of the execution of the system and ensure that error does not lead to a permanent blockage of the production.
+
+\textbf{Deadlock Analysis}
+in our UPPAAL-model is important, since it is used to avoid deadlocks that can halt the book production system \cite{voros2013_short_uppaal_intro}. In this context, we have used the following query to verify that our system design is deadlock free:
+\begin{equation}
+\texttt{A[]} \bigl( \texttt{not deadlock})
+\end{equation}
+This query ensures, that at least one future transition exists from each state of the model. The result indicates, that there is a flow between the templates of scheduler, pipeline, machine and order which cannot result to circular dependencies or waiting state without an exit.
+
+The deadlock analysis thereby supports the stability of the system, and confirms that the components of the architecture are modeled correctly.
+
+\subsection{Validation of Quality Attributes \& Requirements}
+The verification of the system is not only used to analyze the behavior of the system, but it is also used to validate the architecture in accordance with the functional and non-functional requirements.
+
+In this context, the following pipeline related query supports the validation of performance in our architecture and time. Please see Appendix (figure \ref{fig:health_machine_queries}.blue).
+
+This property validates, that the production is always executed within the defined time limit. In the same manner, the following two queries from the Appendix section, related to HealthMonitor (figure \ref{fig:health_machine_queries}.red) and Machine Template (figure \ref{fig:health_machine_queries}.green) checks the reliability and availability quality attributes. These queries show that the proposed system is consistent with the system requirements and the overall architecture.
+
+\subsection{Limitations and Overall Evaluation of Verification}
+The formal model contains simplifications, since it makes the verification possible to execute within the time-limits in UPPAAL. An example can be seen in figure \ref{fig:global_declarations}, where the amount of machines have been defined to \texttt{N\_MACHINES} = 2. This limitation has been imposed, since the model-checking with higher amount of machines resulted in a longer execution time for verification queries with a high usage of RAM.
+
+Although the limitation does not affect the models purpose, since the focus is not to analyze scalability in the amount of machines, but instead understand the behavior of the system in terms of job-scheduling. This behavior can be scaled to more machines if the amount of machines are increased.
+
+Otherwise the interaction between the components is abstracted with the use of synchronization channels \cite{voros2013_short_uppaal_intro} \cite{proenza2008_uppaal_model_checker} instead of a detailed network behavior. Time parameters such as production time, timeout and recovery time have been fixed defined in order to set boundaries. These boundaries would enable us to understand worst-case scenarios, if the system comes to a halt.
+
+Overall the formal verification shows that the system is working correct under the right circumstances designed for the project. The verification shows reliability \& stability to the proposed architectural design and shows that the main design decision supports the quality attributes of reliability, availability, and performance. Even though the model is abstracted, it works as a strong analytical tool that can validate the systems main properties early in the design phase.
