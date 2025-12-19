@@ -89,107 +89,41 @@ This folder contains all microservice source code:
 ### Prerequisites
 - Docker and Docker Compose installed
 - Git
-- (Optional) Java 17+ for local development
-- (Optional) Node.js 18+ for frontend development
-- (Optional) .NET 7+ for scheduler development
 
-### Running the Entire System
+### Run the System
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd Advanced-Architecture
-   ```
-
-2. **Start all services with Docker Compose**:
-   ```bash
-   docker compose up -d
-   ```
-
-   This will start:
-   - PostgreSQL (port 5432)
-   - Redis (port 6379)
-   - Kafka + Zookeeper (ports 9092, 29092)
-   - MQTT Broker (port 1883)
-   - Orchestrator (internal port 8082)
-   - API Gateway (port 8080)
-   - External Service UI (port 5173)
-   - Book Scheduler (internal)
-
-3. **Access the application**:
-   - Frontend UI: http://localhost:5173
-   - API Gateway: http://localhost:8080
-   - API Documentation: http://localhost:8080/actuator
-
-4. **View logs**:
-   ```bash
-   # All services
-   docker compose logs -f
-
-   # Specific service
-   docker compose logs -f api-gateway
-   ```
-
-5. **Stop all services**:
-   ```bash
-   docker compose down
-   ```
-
-6. **Clean up (remove volumes)**:
-   ```bash
-   docker compose down -v
-   ```
-
-### Development Mode
-
-#### API Gateway & Orchestrator (Local)
+1. **Start all services:**
 ```bash
-cd src/Orchestrator
-./gradlew bootRun
-
-cd src/API-Gateway
-./gradlew bootRun
+cd src/UnifiedScheduler
+docker-compose up -d
 ```
 
-#### External Service (Local)
-```bash
-cd src/External-Service
-npm install
-npm run dev
+This starts:
+- MQTT Broker (port 1883)
+- Redis (port 6379)
+- TimescaleDB (port 5432)
+- Unified Scheduler with Web Dashboard (port 8080)
+- 4 Machine Simulators (A, B, C, D)
+
+2. **Access the Web Dashboard:**
+
+Open your browser and navigate to:
+```
+http://localhost:8080
 ```
 
-#### Book Scheduler (Local)
-```bash
-cd src/BookScheduler_MQTT
-dotnet run
-```
+From the web dashboard you can:
+- **Create new orders** - Specify title, author, pages, cover type, paper type, and quantity
+- **Monitor the scheduler in real-time** - Watch jobs being assigned to machines
+- **Track order progress** - See which units are in progress and completed
+- **View completion status** - Know when your order is complete
+- **Analyze statistics** - View processing times and requeue events for each order
 
-### Testing the System
-
-1. **Submit a production order**:
-   ```bash
-   curl -X POST http://localhost:8080/api/v1/orchestrator/orders \
-     -H "Content-Type: application/json" \
-     -d '{
-       "title": "Test Book",
-       "author": "John Doe",
-       "pages": 300,
-       "coverType": "HARDCOVER",
-       "quantity": 100
-     }'
-   ```
-
-2. **Get order by ID**:
-   ```bash
-   curl http://localhost:8080/api/v1/orchestrator/orders/{orderId}
-   ```
-
-### Troubleshooting
-
-- **Port conflicts**: Ensure ports 5173, 8080, 5432, 6379, 9092, 1883 are available
-- **Docker issues**: Run `docker compose down -v` and restart
-- **Service health**: Check `docker compose ps` for service status
-- **Logs**: Use `docker compose logs <service-name>` for debugging
+The dashboard provides a live view of:
+- Active machines and their current status
+- Job queue lengths for each stage (A, B, C, D)
+- Order progress with unit-by-unit tracking
+- Historical statistics including total processing time and requeue counts
 
 ## Compiling Latex
 You can compile latex source files to PDF locally. Multiple options are available; choose the one you prefer.
