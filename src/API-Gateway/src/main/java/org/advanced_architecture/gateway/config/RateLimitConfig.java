@@ -11,18 +11,15 @@ import org.springframework.context.annotation.Primary;
 import reactor.core.publisher.Mono;
 
 /**
- * The Spring COnfiguration for Rate Limiting Key Resolution.
+ * Configures rate limiting for the API Gateway using Redis.
  *
- * Responsibilites:
- * Shows the {@code ipKeyResolver} for Spring Cloud Gateway.
- * It delegates the IP-Extraction to {@link ClientIpExtractor}
+ * Responsibilities:
+ * - Defines IP-based key resolver for identifying clients (delegates to {@link ClientIpExtractor})
+ * - Configures Redis rate limiter with 10 requests/second and burst capacity of 20
+ * - Provides test route for validating rate limiting behavior
  *
- * What is its Behavior?
- * Resolves client identity for Rate Limiting using the preferred client IP.
- * It keeps the bean seperated from logic and ensures Seperations of Concerns.
- *
- * Where is it used:
- * Referenced in Application.yml by RequestRateLimiter
+ * Usage:
+ * Referenced in application.yml by RequestRateLimiter filter
  */
 @Configuration
 public class RateLimitConfig {

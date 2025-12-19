@@ -7,7 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
+/**
+ * Kafka implementation of {@link EventPublisher}.
+ *
+ * Responsibilities:
+ * - Serializes event objects to JSON using Jackson ObjectMapper
+ * - Publishes events to Kafka topics via KafkaTemplate
+ * - Logs successful publishes and serialization errors
+ *
+ * Error handling:
+ * - JSON serialization failures throw RuntimeException
+ * - Kafka send failures are not caught (rely on Spring Kafka retries)
+ */
 @Component
 public class KafkaEventPublisher implements EventPublisher {
 
@@ -21,6 +32,13 @@ public class KafkaEventPublisher implements EventPublisher {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Publishes an event to the specified topic.
+     *
+     * @param topic the target topic/channel
+     * @param key the event key (e.g., order ID) for partitioning
+     * @param event the event payload (will be serialized by implementation)
+     */
     @Override
     public void publish(String topic, String key, Object event) {
         try {

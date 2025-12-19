@@ -6,10 +6,16 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 /**
- * Default Implementation of {@link ResponseLogger}
+ * Handles fallback responses when circuit breaker opens or downstream services are unavailable.
+ *
+ * Responsibilities:
+ * - Returns structured JSON error responses when services are down
+ * - Provides endpoints under "/fallback" consumed by CircuitBreaker fallbackUri
+ * - Ensures a consistent error response structure for clients
+ *
  * Behavior:
- * - This class writes the precise info logs for requests and responses.
- * - This calsswrites errors logs in exceptions during filter chain execution.
+ * - Produces 503 Service Unavailable responses with metadata
+ * - Includes timestamp, path, and helpful suggestions in error response
  */
 @Component
 public class DefaultResponseLogger implements ResponseLogger {

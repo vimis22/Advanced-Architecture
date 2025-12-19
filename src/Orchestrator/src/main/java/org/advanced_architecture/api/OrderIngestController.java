@@ -16,7 +16,20 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * REST controller for order ingestion.
+ *
+ * Responsibilities:
+ * - Accepts order creation requests via POST /api/v1/orchestrator/orders
+ * - Retrieves orders by ID via GET /api/v1/orchestrator/orders/{orderId}
+ * - Validates incoming requests and handles exceptions
+ * - Returns structured JSON responses with appropriate HTTP status codes
+ *
+ * Exception handling:
+ * - Validation errors return 400 Bad Request
+ * - Order not found returns 404 Not Found
+ * - Server errors return 500 Internal Server Error
+ */
 @RestController
 @RequestMapping("/api/v1/orchestrator")
 public class OrderIngestController {

@@ -10,17 +10,16 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 /**
- * This is a Global Gateway Filter, which logs requests and responses.
+ * Global filter that logs all incoming requests and outgoing responses.
  *
  * Responsibilities:
- * It logs HTTP Method and Path before delegating to the filter chain.
- * It logs response status after processing the book production order.
- * It logs errors without modifying responses.
+ * - Logs HTTP method and path for every incoming request
+ * - Logs response status code after request processing
+ * - Logs errors without modifying the response
+ * - Executes early in the filter chain (order: -1) to capture all traffic
  *
- * What is its Behavior?
- * This class uses the {@code ResponseLogger} to log requests and responses.
- * This helps in captuing the most traffic details.
- * But this class does not change the request/response payloads or routing.
+ * Uses {@link ResponseLogger} to handle the actual logging logic while
+ * keeping this filter focused on interception only.
  */
 @Component
 public class LoggingFilter implements GlobalFilter, Ordered {

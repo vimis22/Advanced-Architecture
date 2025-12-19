@@ -4,12 +4,12 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
 /**
- * Default Implementation of {link ClientIpExtractor}
+ * Default implementation of {@link ResponseLogger}.
  *
  * Behavior:
- * - Parses X-Forward for and afterwards return first non-blank.
- * - Falls back to {@code request.getRemoteAddress()} when header is absent/invalid.
- * - Returns "unknown" if neither is available.
+ * - Writes info logs for all requests and responses
+ * - Writes error logs for exceptions during filter chain execution
+ * - Uses safe() method to prevent null pointer exceptions in log messages.
  *
  * Notes:
  * - Designed for use behind proxies/load balancers.

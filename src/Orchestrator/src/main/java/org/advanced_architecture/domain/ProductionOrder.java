@@ -2,6 +2,22 @@ package org.advanced_architecture.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+/**
+ * Domain entity representing a book production order.
+ *
+ * Lifecycle states:
+ * - PENDING: Initial state when order is created
+ * - ORCHESTRATED: Order has been processed and event published
+ * - SCHEDULED: Order has been scheduled for production
+ * - IN_PROGRESS: Production is ongoing
+ * - COMPLETED: Production finished successfully
+ * - REJECTED: Order rejected due to validation or business rule failure
+ *
+ * Business rules:
+ * - Only PENDING orders can be marked as ORCHESTRATED
+ * - createdAt timestamp is set automatically on creation
+ * - Uses optimistic locking (version field) for concurrent updates
+ */
 
 @Entity
 @Table(name = "production_orders")

@@ -11,7 +11,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
-
+/**
+ * Core service for orchestrating production orders.
+ *
+ * Responsibilities:
+ * - Creates and persists production orders
+ * - Publishes OrderCreated events to Kafka topic "orders.created"
+ * - Manages order state transitions (PENDING → ORCHESTRATED)
+ * - Provides order retrieval by ID
+ *
+ * Transaction behavior:
+ * - All operations are transactional to ensure data consistency
+ * - Kafka publish failures are logged but do not rollback the transaction
+ */
 @Service
 public class OrderOrchestrationService {
     private static final Logger logger = LoggerFactory.getLogger(OrderOrchestrationService.class);

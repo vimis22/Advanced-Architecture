@@ -4,7 +4,22 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
-
+/**
+ * Value object containing book specification and production details.
+ *
+ * Embedded in ProductionOrder as a JPA @Embeddable component.
+ *
+ * Responsibilities:
+ * - Stores book metadata (title, author, pages, cover/page types)
+ * - Calculates estimated production cost based on specifications
+ * - Immutable after construction (no setters)
+ *
+ * Cost calculation:
+ * - Base cost: 0.10 per page
+ * - Hardcover: +5.00, Softcover: +2.00
+ * - Glossy pages: +1.00, Matte pages: +0.50
+ * - Total multiplied by quantity
+ */
 @Embeddable
 public class BookDetails {
     private String title;

@@ -14,6 +14,19 @@ import org.springframework.kafka.core.ProducerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Spring configuration for Kafka producer setup.
+ *
+ * Provides:
+ * - KafkaTemplate for publishing string messages
+ * - ProducerFactory configured with idempotence and retries
+ * - ObjectMapper with Java 8 time support for JSON serialization
+ *
+ * Producer settings:
+ * - acks=all (wait for all replicas)
+ * - retries=3
+ * - idempotence enabled (exactly-once semantics)
+ */
 @Configuration
 public class KafkaConfiguration {
 

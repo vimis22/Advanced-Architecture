@@ -9,6 +9,18 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.Optional;
 
+/**
+ * JPA implementation of {@link OrderRepository}.
+ *
+ * Uses EntityManager directly for fine-grained control over persistence operations.
+ *
+ * Behavior:
+ * - save(): Uses persist() for new entities, merge() for updates
+ * - findById(): Returns Optional to handle missing orders gracefully
+ * - deleteById(): Safely removes order if it exists
+ *
+ * All operations are transactional via class-level @Transactional annotation.
+ */
 @Repository
 @Transactional
 public class JpaOrderRepository implements OrderRepository {

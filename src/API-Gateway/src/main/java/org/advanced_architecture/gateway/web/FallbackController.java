@@ -19,7 +19,7 @@ import java.util.Map;
  * - Provides endpoints under "/fallback" consumed by CircuitBreaker from fallBackUri
  *
  * Behavior:
- * - Produces 503 Service Unavailable responses with Metadata.
+ * - Produces 503 Service-Unavailable responses with Metadata.
  * - Ensures to keep structure consistent for clients.
  *
  */
