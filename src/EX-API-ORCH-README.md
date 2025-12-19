@@ -13,7 +13,8 @@ https://github.com/vimis22/Advanced-Architecture.git
 ````
 ## Step 2: Start all the services
 ```bash
-# Start ALLE services med Docker Compose
+# Start all services at once through this command.
+# Please note that for External-Service, API-Gateway and Orchestrator. This command needs to be runned under src/API-Gateway.
 docker-compose up -d
 ```
 
