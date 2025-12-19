@@ -432,132 +432,123 @@ system OrderSourceProc, SchedulerProc, PipelineProc, Machine0, Machine1, HealthM
 	<queries>
 		<query>
 			<formula>E&lt;&gt; PipelineProc.PrintingAndCover</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:58:59 +0100">
+			<comment>Pipeline can reach the printing and cover stage</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:51:59 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (PipelineProc.Complete imply lastRunOk)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:02 +0100">
+			<comment>Completed pipelines always mark success flag</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:02 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:05 +0100">
+			<comment>System never enters deadlock state</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:05 +0100">
 			</result>
 		</query>
 		<query>
-			<formula>A[] (PipelineProc.Complete imply lastRunOk)
-</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:07 +0100">
+			<formula>A[] (PipelineProc.Complete imply lastRunOk)</formula>
+			<comment>Pipeline completion implies successful run</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:07 +0100">
 			</result>
 		</query>
 		<query>
-			<formula>A[] (PipelineProc.Error imply lastRunOk == false)
-</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:09 +0100">
+			<formula>A[] (PipelineProc.Error imply lastRunOk == false)</formula>
+			<comment>Pipeline errors always set failure flag</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:10 +0100">
 			</result>
 		</query>
 		<query>
-			<formula>A[] (PipelineProc.Complete imply PipelineProc.pipelineclock &lt;= MAX_PRODUCTION_TIME)
-</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:11 +0100">
+			<formula>A[] (PipelineProc.Complete imply PipelineProc.pipelineclock &lt;= MAX_PRODUCTION_TIME)</formula>
+			<comment>Completed jobs respect maximum production time</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:12 +0100">
 			</result>
 		</query>
 		<query>
-			<formula>A[] (PipelineProc.Idle or PipelineProc.pipelineclock &lt;= MAX_PRODUCTION_TIME)
-</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:13 +0100">
+			<formula>A[] (PipelineProc.Idle or PipelineProc.pipelineclock &lt;= MAX_PRODUCTION_TIME)</formula>
+			<comment>Active pipelines never exceed time limit</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:15 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (SchedulerProc.Waiting imply SchedulerProc.busy == false)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:15 +0100">
+			<comment>Waiting scheduler is never marked busy</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:17 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; OrderProc.Orchestrated</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:16 +0100">
+			<comment>Orders can reach orchestrated state</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:19 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (OrderProc.Orchestrated imply OrderProc.orchestratorclock &lt;= ORCH_MAX)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:19 +0100">
+			<comment>Order orchestration respects time limit</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:25 +0100">
 			</result>
 		</query>
 		<query>
-			<formula>OrderProc.Pending --&gt; (OrderProc.Orchestrated or OrderProc.Rejected or OrderProc.TimeoutError)
-</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:23 +0100">
+			<formula>OrderProc.Pending --&gt; (OrderProc.Orchestrated or OrderProc.Rejected or OrderProc.TimeoutError)</formula>
+			<comment>Pending orders eventually reach a final state</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:29 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] OrderProc.retryCount&lt;=MAX_RETRIES</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:25 +0100">
+			<comment>Retry attempts never exceed maximum limit</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:31 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (HealthMonProc.Alarm imply systemHealthy == false)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:28 +0100">
+			<comment>Health alarms correctly reflect system status</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:35 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; HealthMonProc.Alarm</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:32 +0100">
+			<comment>Health monitor can detect problems</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:38 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; Machine0.Recovering</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:34 +0100">
+			<comment>Machines can enter recovery state</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:40 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; Machine0.Working</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:35 +0100">
+			<comment>Machines can start working on jobs</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:43 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (Machine0.Down imply machineUp[0] == false)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:37 +0100">
+			<comment>Downed machines are marked unavailable</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:46 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (Machine0.Working imply machineUp[0] == true)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:39 +0100">
+			<comment>Working machines are marked available</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:48 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (failCount[0] &lt;=MAX_FAILS)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:40 +0100">
+			<comment>Machine failures stay within limit</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:51 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] (Machine0.Recovering imply Machine0.machineclock &lt;=RECOVERY_TIME)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:42 +0100">
+			<comment>Recovery duration respects time bound</comment>
+			<result outcome="success" type="quality" timestamp="2025-12-19 11:52:53 +0100">
 			</result>
-		</query>
-		<query>
-			<formula/>
-			<comment/>
 		</query>
 	</queries>
 </nta>
