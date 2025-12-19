@@ -1,6 +1,6 @@
 0
 84
-__consumer_offsets 13 194
+__consumer_offsets 13 532
 __consumer_offsets 46 0
 _connect_offsets 23 0
 __consumer_offsets 9 3
@@ -27,7 +27,7 @@ __consumer_offsets 12 0
 __consumer_offsets 41 0
 _connect_offsets 22 0
 __consumer_offsets 24 0
-_connect_offsets 18 195
+_connect_offsets 18 2811
 __consumer_offsets 20 0
 __consumer_offsets 49 0
 _connect_offsets 14 0
@@ -35,16 +35,16 @@ _connect_offsets 13 0
 __consumer_offsets 0 0
 __consumer_offsets 29 0
 _connect_offsets 9 0
-_connect_configs 0 125
+_connect_configs 0 212
 __consumer_offsets 25 0
-_connect_status 1 433
+_connect_status 1 1596
 _connect_offsets 5 0
 __consumer_offsets 8 0
 __consumer_offsets 37 0
 _connect_offsets 1 0
 __consumer_offsets 4 0
 __consumer_offsets 33 3
-__consumer_offsets 15 293
+__consumer_offsets 15 2874
 __consumer_offsets 48 0
 __consumer_offsets 11 0
 __consumer_offsets 44 0
@@ -54,7 +54,7 @@ _connect_offsets 17 0
 __consumer_offsets 19 3
 _connect_offsets 12 0
 __consumer_offsets 32 0
-_connect_status 2 116
+_connect_status 2 426
 _connect_offsets 8 0
 __consumer_offsets 28 0
 __consumer_offsets 7 0
@@ -70,17 +70,17 @@ _connect_offsets 24 0
 __consumer_offsets 10 0
 _confluent-command 0 0
 _connect_offsets 20 0
-__consumer_offsets 22 166
+__consumer_offsets 22 273
 _connect_offsets 16 0
 __consumer_offsets 18 0
 __consumer_offsets 31 3
 _connect_offsets 11 0
 __consumer_offsets 27 6
-_connect_status 3 211
+_connect_status 3 613
 _connect_offsets 7 0
 __consumer_offsets 39 0
 _connect_offsets 3 0
-iot.mqtt.raw 0 7299
+iot.mqtt.raw 0 211929
 __consumer_offsets 6 0
 __consumer_offsets 35 0
 __consumer_offsets 2 3

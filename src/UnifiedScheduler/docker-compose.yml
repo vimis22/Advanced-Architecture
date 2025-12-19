@@ -1,0 +1,164 @@
+services:
+  # MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - scheduler-network
+
+  # Redis for real-time state
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - scheduler-network
+
+  # TimescaleDB for order history
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: timescaledb
+    environment:
+      POSTGRES_DB: scheduler
+      POSTGRES_USER: tsdbuser
+      POSTGRES_PASSWORD: tsdbpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/timescaledb_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - timescale-data:/var/lib/postgresql/data
+    networks:
+      - scheduler-network
+
+  # Unified Scheduler (C#)
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: unified-scheduler
+    depends_on:
+      - mosquitto
+      - redis
+      - timescaledb
+    environment:
+      MQTT__Broker: mosquitto
+      MQTT__Port: 1883
+      Redis__ConnectionString: redis:6379
+      TimescaleDB__ConnectionString: Host=timescaledb;Port=5432;Database=scheduler;Username=tsdbuser;Password=tsdbpass
+    networks:
+      - scheduler-network
+    stdin_open: true
+    tty: true
+
+  # Machine A (Printing) - Scalable
+  machine-a:
+    build:
+      context: ../edge-mqtt/simulator
+      dockerfile: Dockerfile
+    depends_on:
+      - mosquitto
+    environment:
+      BROKER_HOST: mosquitto
+      BROKER_PORT: 1883
+      MACHINE_TYPE: A
+      HEARTBEAT_INTERVAL: 1
+      TICK_MS_MIN: 90
+      TICK_MS_MAX: 100
+    networks:
+      - scheduler-network
+    deploy:
+      replicas: 6
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+
+  # Machine B (Cover) - Scalable
+  machine-b:
+    build:
+      context: ../edge-mqtt/simulator
+      dockerfile: Dockerfile
+    depends_on:
+      - mosquitto
+    environment:
+      BROKER_HOST: mosquitto
+      BROKER_PORT: 1883
+      MACHINE_TYPE: B
+      HEARTBEAT_INTERVAL: 1
+      TICK_MS_MIN: 20
+      TICK_MS_MAX: 30
+    networks:
+      - scheduler-network
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+
+  # Machine C (Binding) - Scalable
+  machine-c:
+    build:
+      context: ../edge-mqtt/simulator
+      dockerfile: Dockerfile
+    depends_on:
+      - mosquitto
+    environment:
+      BROKER_HOST: mosquitto
+      BROKER_PORT: 1883
+      MACHINE_TYPE: C
+      HEARTBEAT_INTERVAL: 1
+      TICK_MS_MIN: 50
+      TICK_MS_MAX: 60
+    networks:
+      - scheduler-network
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+
+  # Machine D (Packaging) - Scalable
+  machine-d:
+    build:
+      context: ../edge-mqtt/simulator
+      dockerfile: Dockerfile
+    depends_on:
+      - mosquitto
+    environment:
+      BROKER_HOST: mosquitto
+      BROKER_PORT: 1883
+      MACHINE_TYPE: D
+      HEARTBEAT_INTERVAL: 1
+      TICK_MS_MIN: 15
+      TICK_MS_MAX: 20
+    networks:
+      - scheduler-network
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 30s  
+
+
+  # MQTT Dashboard (Web UI)
+  dashboard:
+    image: nginx:alpine
+    container_name: mqtt-dashboard
+    ports:
+      - "8080:80"
+    volumes:
+      - ./mqtt-dashboard:/usr/share/nginx/html:ro
+    networks:
+      - scheduler-network
+
+networks:
+  scheduler-network:
+    driver: bridge
+
+volumes:
+  timescale-data:
