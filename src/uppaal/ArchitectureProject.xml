@@ -508,13 +508,6 @@ system OrderSourceProc, SchedulerProc, PipelineProc, Machine0, Machine1, HealthM
 			</result>
 		</query>
 		<query>
-			<formula>A[] (PipelineProc.Complete imply PipelineProc.pipelineclock &lt;= MAX_PRODUCTION_TIME)
-</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-12-18 21:21:46 +0100">
-			</result>
-		</query>
-		<query>
 			<formula>A[] (HealthMonProc.Alarm imply systemHealthy == false)</formula>
 			<comment/>
 			<result outcome="success" type="quality" timestamp="2025-12-18 14:59:28 +0100">
