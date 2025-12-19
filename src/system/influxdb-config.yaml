@@ -1,0 +1,8 @@
+persistence:
+  enabled: false
+adminUser:
+  user: admin
+  password: admin123
+token: mytoken
+bucket: mybucket
+org: myorg

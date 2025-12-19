@@ -1,0 +1,13 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: kafka-node-pool-one
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: kafka-cluster-one
+spec:
+  replicas: 3
+  roles:
+    - broker
+  storage:
+    type: ephemeral

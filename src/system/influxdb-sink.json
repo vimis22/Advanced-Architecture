@@ -1,0 +1,12 @@
+{
+    "name": "influxdb-sink",
+    "config": {
+        "connector.class": "io.confluent.influxdb.InfluxDBSinkConnector",
+        "tasks.max": "1",
+        "topics": "test-topic",
+        "influxdb.url": "http://influxdb:8086",
+        "influxdb.db": "mybucket",
+        "influxdb.username": "admin",
+        "influxdb.password": "admin123"
+    }
+}
