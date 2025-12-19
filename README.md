@@ -1,88 +1,27 @@
 # Advanced Software Architecture and Analysis Portfolio Template
-
 - [Introduction](#introduction)
-  - [.github](#github)
-    - [CI/CD Workflow](#cicd-workflow)
-    - [Hand in Workflow](#hand-in-workflow)
-  - [.vscode](#vscode)
-  - [Report](#report)
-  - [Src](#src)
+- [Folder Structure & File Placements](#folder-structure--file-placements)
+- [Quick Start](#quick-start)
+- [CI/CD Workflow](#cicd-workflow)
+- [Hand in Workflow](#hand-in-workflow)
 - [Compiling Latex](#compiling-latex)
-  - [Option 1: LaTeX Workshop + TeX Live](#option-1-latex-workshop--tex-live)
-    - [Extension](#extension)
-    - [Link to download TeX Live](#link-to-download-tex-live)
-  - [Option 2: Trigger Task on Save + Docker](#option-2-trigger-task-on-save--docker)
-    - [Compilation of latex on save](#compilation-of-latex-on-save)
-  - [Option 3: Overleaf](#option-3-overleaf)
-- [Recommended VSCode Extension](#recommended-vscode-extension)
 
 ## Introduction
 This repository implements a microservices-based book production system for Advanced Software Engineering portfolio project.
 
-### System Architecture
-The system consists of the following services:
-- **External-Service**: Frontend UI (React/Vite) - User interface for submitting production orders
-- **API-Gateway**: Spring Cloud Gateway - Entry point with rate limiting and circuit breakers
-- **Orchestrator**: Spring Boot service - Core business logic and domain orchestration
-- **BookScheduler**: C# MQTT service - Production scheduling system
-- **edge-mqtt**: Kafka Connect + MQTT infrastructure
-
-Below is the detailed overview of the repository structure:
-
-<pre>
-.
-├── .github/
-│   └── workflows/
-│       ├── ci-cd.yml
-│       └── handin.yml
-├── .vscode/
-│   ├── settings.json
-│   └── tasks.json
-├── Report/
-│   ├── GroupTemplate/
-│   └── ReflectionsTemplate/
-├── Src/
-└── .gitignore
-</pre>
-
-## .github
-This folder contains template workflows designed for CI/CD processes and for generating the final submission artifacts.
-
-### CI/CD Workflow
-The CI/CD workflow is split into several jobs:
-
-![cicdworkflow](images/cicdworkflow.png)
-
-- **Clone repository**: Clones the repository, creates an artifact from it, and then uploads this artifact, ensuring consistency across all jobs.
-- **Code analysis**: Utilize this job for linting or any other static code analysis tools you'd like to incorporate.
-- **Build application**: Compile the source code. After compiling, the artifact is uploaded for easy accessibility, aiding in debugging and local testing.
-- **Test application**: Run tests that require the code to be compiled. This step downloads the compiled artifact created in the previous step.
-- **Build and push image**: Builds an image using a specified `DockerFile` and pushes the image to the GitHub container registry specific to the repository owner.
-- **Deploy application**: Can be used to deploy the image(s) generated during the workflow onto your virtual machines.
-
-### Hand in Workflow
-The hand-in workflow includes some of the jobs from the CI/CD workflow and some additional ones:
-
-![Alt text](images/handinworkflow.png)
-
-- **Compile latex groupReport**: This job compiles the latex source files for the group report and upload the output as an artifact.
-- **Compile latex groupReport**: This job compiles the latex source files for the reflections document and upload the output as an artifact.
-- **Upload hand-in artifacts**: This job creates a zip file containing the Group Report, the Reflections Document, the source code, and any build artifacts. The zip can be downloaded by navigating to Repository > Actions > The completed hand-in workflow as shown in the image below.
-
-![Workflow Artifacts](images/artifacts.png)
+## Folder Structure & File Placements
 
 ### Report
-This directory contains the latex source files essential for the group report and the reflections document.
-
-The directory latexUtils contains scripts for compiling LaTeX locally using docker, you do not need to change anything in these files, but you are welcome to do so if you want to.
+Please note that the Group Report in Latex-format is located under the `report/GroupReport/Group4_Book_Production_Report_ASAAT` folder.
+Whereas the PDF-Version of the Group Report is located under the `report/GroupReport` folder.
 
 ### Src
-This folder contains all microservice source code:
-- `API-Gateway/` - Spring Cloud Gateway service
-- `Orchestrator/` - Core orchestration service
-- `External-Service/` - React/Vite frontend
-- `BookScheduler_MQTT/` - C# MQTT scheduler
-- `edge-mqtt/` - Kafka Connect infrastructure
+Please note that the source code for the Group Project is located under the `src` folder.
+This folder contains multiple microservices, but the main folder you should be looking at is: `src/UnifiedScheduler`.
+
+### UPPAAL & R-Scripts
+Please note that the UPPAAL model xml-file and the R scripts are located under the `src/uppaal_and_r` folder.
+It is important to note that test-data for the R-scrips are from the orders.csv file located under the `src/UnifiedScheduler` folder.
 
 ## Quick Start
 
@@ -124,6 +63,32 @@ The dashboard provides a live view of:
 - Job queue lengths for each stage (A, B, C, D)
 - Order progress with unit-by-unit tracking
 - Historical statistics including total processing time and requeue counts
+
+## .github
+This folder contains template workflows designed for CI/CD processes and for generating the final submission artifacts.
+
+### CI/CD Workflow
+The CI/CD workflow is split into several jobs:
+
+![cicdworkflow](images/cicdworkflow.png)
+
+- **Clone repository**: Clones the repository, creates an artifact from it, and then uploads this artifact, ensuring consistency across all jobs.
+- **Code analysis**: Utilize this job for linting or any other static code analysis tools you'd like to incorporate.
+- **Build application**: Compile the source code. After compiling, the artifact is uploaded for easy accessibility, aiding in debugging and local testing.
+- **Test application**: Run tests that require the code to be compiled. This step downloads the compiled artifact created in the previous step.
+- **Build and push image**: Builds an image using a specified `DockerFile` and pushes the image to the GitHub container registry specific to the repository owner.
+- **Deploy application**: Can be used to deploy the image(s) generated during the workflow onto your virtual machines.
+
+### Hand in Workflow
+The hand-in workflow includes some of the jobs from the CI/CD workflow and some additional ones:
+
+![Alt text](images/handinworkflow.png)
+
+- **Compile latex groupReport**: This job compiles the latex source files for the group report and upload the output as an artifact.
+- **Compile latex groupReport**: This job compiles the latex source files for the reflections document and upload the output as an artifact.
+- **Upload hand-in artifacts**: This job creates a zip file containing the Group Report, the Reflections Document, the source code, and any build artifacts. The zip can be downloaded by navigating to Repository > Actions > The completed hand-in workflow as shown in the image below.
+
+![Workflow Artifacts](images/artifacts.png)
 
 ## Compiling Latex
 You can compile latex source files to PDF locally. Multiple options are available; choose the one you prefer.
